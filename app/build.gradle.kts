@@ -5,11 +5,11 @@ plugins {
 }
 
 android {
-    namespace = "dev.xeu.community"
+    namespace = "dev.xeu.forums"
     compileSdk = 36
 
     defaultConfig {
-        applicationId = "dev.xeu.community"
+        applicationId = "dev.xeu.forums"
         minSdk = 26
         targetSdk = 36
         // CI passes the run number so every build installs over the previous one.
@@ -17,7 +17,7 @@ android {
         versionName = System.getenv("VERSION_NAME") ?: "1.0"
         // Which release channel this build belongs to; the updater follows it by default.
         buildConfigField("String", "CHANNEL", "\"${System.getenv("CHANNEL") ?: "dev"}\"")
-        buildConfigField("String", "GITHUB_REPO", "\"Xiaomi-EU-Community/xiaomi-eu-app\"")
+        buildConfigField("String", "GITHUB_REPO", "\"XEU-Forums/xeu-forums-app\"")
     }
 
     // CI writes the keystore from repo secrets. Without them (e.g. local builds) the debug key is used.

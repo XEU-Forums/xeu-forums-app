@@ -67,7 +67,7 @@ jobs:
           chmod +x gradlew
           ./gradlew --no-daemon assembleRelease
           mkdir -p dist
-          APK="XEU-Community-$VERSION_NAME.apk"
+          APK="XEU-Forums-$VERSION_NAME.apk"
           cp app/build/outputs/apk/release/*.apk "dist/$APK"
           echo "APK=$APK" >> "$GITHUB_ENV"
           echo "SHA256=$(sha256sum "dist/$APK" | cut -d' ' -f1)" >> "$GITHUB_ENV"
@@ -116,5 +116,5 @@ jobs:
         run: |
           gh release create "$GITHUB_REF_NAME" "dist/$APK" dist/update.json \
             --latest \
-            --title "XEU Community $VERSION_NAME" \
+            --title "XEU Forums $VERSION_NAME" \
             --notes-file dist/notes.md

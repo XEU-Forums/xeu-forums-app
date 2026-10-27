@@ -1,12 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Status-bar icon: must be a single white silhouette. -->
+<!-- Status-bar icon: white outline bubble with xeu lettering. -->
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
     android:width="24dp"
     android:height="24dp"
-    android:viewportWidth="56"
-    android:viewportHeight="56">
-    <path
-        android:fillColor="#FFFFFFFF"
-        android:fillType="evenOdd"
-        android:pathData="M12,8h28a10,10 0,0 1,10 10v16a10,10 0,0 1,-10 10H22l-10,8v-8a10,10 0,0 1,-10 -10V18a10,10 0,0 1,10 -10z M26,14l11,12h-7v11h-8V26h-7z" />
+    android:viewportWidth="52"
+    android:viewportHeight="52">
+    <group android:translateX="-24" android:translateY="-36">
+        <path
+            android:strokeColor="#FFFFFFFF"
+            android:strokeWidth="3.4"
+            android:strokeLineJoin="round"
+            android:pathData="M38,42h28a10,10 0,0 1,10 10v16a10,10 0,0 1,-10 10H48l-10,8v-8a10,10 0,0 1,-10 -10V52a10,10 0,0 1,10 -10z" />
+        <path
+            android:strokeColor="#FFFFFFFF"
+            android:strokeWidth="4"
+            android:strokeLineCap="round"
+            android:strokeLineJoin="round"
+            android:pathData="M33.5,53.5L42.5,66.5M42.5,53.5L33.5,66.5M46.5,60H57.5A5.5,6.5 0 1,0 55.9,64.6M61.5,53.5V61A5,5.5 0 0,0 71.5,61V53.5M71.5,61V66.5" />
+    </group>
 </vector>

@@ -12,5 +12,5 @@ dependencyResolutionManagement {
         mavenCentral()
     }
 }
-rootProject.name = "XeuCommunity"
+rootProject.name = "XeuForums"
 include(":app")

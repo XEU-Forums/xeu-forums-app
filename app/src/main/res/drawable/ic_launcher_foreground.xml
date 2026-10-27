@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Original XEU Community mark: two overlapping conversation bubbles with an update arrow.
-     Deliberately not based on the Xiaomi or xiaomi.eu logos. Safe zone: central 66dp of 108dp. -->
+<!-- XEU Forums mark: two overlapping conversation bubbles with "xeu" lettering.
+     Original artwork, not based on Xiaomi's or xiaomi.eu's logos. Safe zone: central 66dp of 108dp. -->
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
     android:width="108dp"
     android:height="108dp"
@@ -15,8 +15,11 @@
     <path
         android:fillColor="#FFFFFFFF"
         android:pathData="M38,42h28a10,10 0,0 1,10 10v16a10,10 0,0 1,-10 10H48l-10,8v-8a10,10 0,0 1,-10 -10V52a10,10 0,0 1,10 -10z" />
-    <!-- update arrow -->
+    <!-- xeu -->
     <path
-        android:fillColor="#FFFF6A13"
-        android:pathData="M52,48l11,12h-7v11h-8V60h-7z" />
+        android:strokeColor="#FFFF6A13"
+        android:strokeWidth="3.6"
+        android:strokeLineCap="round"
+        android:strokeLineJoin="round"
+        android:pathData="M33.5,53.5L42.5,66.5M42.5,53.5L33.5,66.5M46.5,60H57.5A5.5,6.5 0 1,0 55.9,64.6M61.5,53.5V61A5,5.5 0 0,0 71.5,61V53.5M71.5,61V66.5" />
 </vector>
