@@ -21,6 +21,7 @@ import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material.icons.outlined.Bolt
 import androidx.compose.material.icons.outlined.PhoneAndroid
 import androidx.compose.material.icons.outlined.Search
+import androidx.compose.material.icons.outlined.Notifications
 import androidx.compose.material.icons.outlined.SystemUpdate
 import androidx.compose.material3.AssistChip
 import androidx.compose.material3.AssistChipDefaults
@@ -85,18 +86,38 @@ fun ForumsScreen(nav: Nav) {
 private fun HomeHero(index: ForumIndex?, nav: Nav) {
     val accents = LocalAccents.current
     HeroHeader {
-        Text(
-            "UNOFFICIAL APP",
-            style = SectionLabelStyle,
-            color = accents.onHero.copy(alpha = 0.8f),
-            modifier = Modifier.padding(top = 8.dp),
-        )
-        Text(
-            "Xiaomi.EU Forums",
-            style = MaterialTheme.typography.headlineLarge,
-            color = accents.onHero,
-            modifier = Modifier.padding(top = 2.dp),
-        )
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            Column(Modifier.weight(1f)) {
+                Text(
+                    "UNOFFICIAL APP",
+                    style = SectionLabelStyle,
+                    color = accents.onHero.copy(alpha = 0.8f),
+                    modifier = Modifier.padding(top = 8.dp),
+                )
+                Text(
+                    "Xiaomi.EU Forums",
+                    style = MaterialTheme.typography.headlineLarge,
+                    color = accents.onHero,
+                    modifier = Modifier.padding(top = 2.dp),
+                )
+            }
+            if (dev.xeu.forums.data.Http.isLoggedIn()) {
+                val unread = dev.xeu.forums.data.Http.unreadAlerts.value
+                androidx.compose.material3.IconButton(
+                    onClick = { nav.alerts() },
+                    colors = androidx.compose.material3.IconButtonDefaults.iconButtonColors(
+                        containerColor = Color.White.copy(alpha = 0.18f)),
+                ) {
+                    androidx.compose.material3.BadgedBox(badge = {
+                        if (unread > 0) androidx.compose.material3.Badge(containerColor = Color.White, contentColor = Brand.OrangeDeep) {
+                            Text(unread.coerceAtMost(99).toString())
+                        }
+                    }) {
+                        Icon(androidx.compose.material.icons.Icons.Outlined.Notifications, "Notifications", tint = accents.onHero)
+                    }
+                }
+            }
+        }
         // Search pill
         Surface(
             onClick = { nav.search() },
@@ -135,7 +156,6 @@ private fun HomeHero(index: ForumIndex?, nav: Nav) {
     ) {
         QuickChip(Icons.Outlined.Bolt, "New posts") { nav.forum(ForumRepository.NEW_POSTS) }
         QuickChip(Icons.Outlined.SystemUpdate, "ROM releases") { nav.forum(dev.xeu.forums.data.RELEASE_FORUM) }
-        QuickChip(Icons.Outlined.PhoneAndroid, "My devices") { nav.tab("devices") }
     }
 }
 

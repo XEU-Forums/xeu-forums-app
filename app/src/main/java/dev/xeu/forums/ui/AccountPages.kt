@@ -76,14 +76,15 @@ fun AlertsScreen(nav: Nav) {
             is Load.Err -> ErrorBox(s.message, loader.reload, mod)
             is Load.Ok -> RefreshBox(loader.refreshing, loader.reload, mod) {
                 LazyColumn(Modifier.fillMaxSize()) {
-                    if (s.value.isEmpty()) item {
+                    // Only alerts the app can open (threads, posts, messages, profiles).
+                    val alerts = s.value.filter { a -> a.link?.let { dev.xeu.forums.data.isNativeForumLink(it) } == true }
+                    if (alerts.isEmpty()) item {
                         EmptyState(Icons.Outlined.Notifications, "No alerts yet",
                             "Replies, quotes, mentions and reactions to your posts show up here.")
                     }
-                    items(s.value, key = { it.id }) { a ->
+                    items(alerts, key = { it.id }) { a ->
                         Surface(
                             onClick = { a.link?.let(nav::link) },
-                            enabled = a.link != null,
                             shape = MaterialTheme.shapes.large,
                             color = if (a.unread) MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.35f)
                             else MaterialTheme.colorScheme.surfaceContainerLow,
@@ -116,15 +117,6 @@ fun ConversationsScreen(nav: Nav) {
         title = "Direct messages",
         large = true,
         onBack = { nav.back() },
-        floatingActionButton = {
-            if (Http.isLoggedIn()) ExtendedFloatingActionButton(
-                onClick = { nav.web(BASE + "conversations/add", "New message") },
-                icon = { Icon(Icons.Outlined.Edit, null) },
-                text = { Text("New message") },
-                containerColor = MaterialTheme.colorScheme.primary,
-                contentColor = MaterialTheme.colorScheme.onPrimary,
-            )
-        },
     ) { mod ->
         if (!Http.isLoggedIn()) { Box(mod) { NeedsLogin(nav) }; return@ScreenScaffold }
         when (val s = loader.state) {
@@ -137,7 +129,7 @@ fun ConversationsScreen(nav: Nav) {
                     }
                     items(s.value, key = { it.id }) { c ->
                         Surface(
-                            onClick = { nav.web(c.url, c.title) },
+                            onClick = { nav.link(c.url) },
                             shape = MaterialTheme.shapes.large,
                             color = if (c.unread) MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.35f)
                             else MaterialTheme.colorScheme.surfaceContainerLow,

@@ -83,8 +83,6 @@ fun SettingsScreen(nav: Nav) {
                     ) { m -> change(reschedule = true) { it.copy(forumCheckMinutes = m) } }
                 }
                 CardDivider()
-                CardRow("ROM release alerts", "Builds for your devices and how often to check", Icons.Outlined.SystemUpdate) { nav.roms() }
-                CardDivider()
                 CardRow(
                     "Sounds and channels",
                     if (Notifier.allowed(context)) "Android notification settings" else "Notifications are off for this app",

@@ -78,6 +78,26 @@ fun <T> rememberLoader(vararg keys: Any?, block: suspend () -> T): Loader<T> {
     return Loader(state, refreshing) { tick++ }
 }
 
+/**
+ * Like [rememberLoader], but starts from [cached] (if any) so content shows immediately,
+ * then refreshes in the background.
+ */
+@Composable
+fun <T> rememberCachedLoader(key: Any?, cached: () -> T?, block: suspend () -> T): Loader<T> {
+    var state by remember(key) { mutableStateOf<Load<T>>(cached()?.let { Load.Ok(it) } ?: Load.Loading) }
+    var refreshing by remember(key) { mutableStateOf(false) }
+    var tick by remember(key) { mutableIntStateOf(0) }
+    LaunchedEffect(key, tick) {
+        val hadContent = state is Load.Ok
+        if (hadContent) refreshing = true else state = Load.Loading
+        state = try { Load.Ok(block()) } catch (e: Exception) {
+            if (hadContent) state else Load.Err(friendlyError(e))
+        }
+        refreshing = false
+    }
+    return Loader(state, refreshing) { tick++ }
+}
+
 fun friendlyError(e: Throwable): String = when {
     e is java.net.UnknownHostException -> "No connection. Check your internet and try again."
     e is java.net.SocketTimeoutException -> "The forum is taking too long to respond. Try again."

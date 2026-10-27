@@ -6,10 +6,9 @@ An unofficial Android client for the [xiaomi.eu community forum](https://xiaomi.
 
 - **Forum reader** – every category, forum and thread in a native UI with paging, images, quotes and "jump to latest".
 - **My devices** – pick your phones (by codename) and get a combined feed of their forums.
-- **ROM tracker** – background checks of xiaomi.eu's SourceForge feed and release forum, with notifications for your devices.
-- **Account** – log in on the forum's own page, switch between several accounts, see your profile, alerts, direct messages, watched threads, bookmarks and account settings.
+- **Account** – log in on the forum's login page, switch between accounts, see your profile, alerts, direct messages and watched threads, all inside the app.
 - **Notifications** – forum alerts (replies, quotes, mentions, reactions) and new direct messages, checked every 15 min–3 h.
-- **Material You** – Material 3 with dynamic color from your wallpaper (Android 12+), light/dark/system theme and a themed icon.
+- **Design** – Material 3 with the XEU orange theme in light and dark mode, and a themed icon.
 - **In-app updates** – stable and dev channels from GitHub releases.
 
 ## Get the APK

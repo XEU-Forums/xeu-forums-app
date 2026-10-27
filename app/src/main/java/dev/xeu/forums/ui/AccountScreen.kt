@@ -93,16 +93,23 @@ fun AccountScreen(nav: Nav) {
     var busy by remember { mutableStateOf(false) }
     var confirmLogout by remember { mutableStateOf(false) }
 
-    val loader = rememberLoader(version) {
+    val cache = remember { dev.xeu.forums.data.ProfileCache(context.applicationContext) }
+    val loader = rememberCachedLoader(
+        key = version,
+        cached = { if (Http.isLoggedIn()) cache.load()?.let { (m, p) -> AccountData(m, p) } else null },
+    ) {
         val me = ForumRepository.me()
         if (me != null) runCatching { accounts.saveCurrent(me) }
-        AccountData(me, me?.let { runCatching { ForumRepository.profile(it.userId) }.getOrNull() })
+        val profile = me?.let { runCatching { ForumRepository.profile(it.userId) }.getOrNull() }
+        if (me != null) cache.save(me, profile) else cache.clear()
+        AccountData(me, profile)
     }
     val me = (loader.state as? Load.Ok)?.value?.me
     val profile = (loader.state as? Load.Ok)?.value?.profile
 
     fun switchTo(id: Int) = scope.launch {
         busy = true
+        cache.clear()
         accounts.switchTo(id)
         busy = false
         version++
@@ -126,37 +133,6 @@ fun AccountScreen(nav: Nav) {
                             trailing = { CountOrChevron(me.unreadConversations) }) { nav.conversations() }
                         CardDivider()
                         CardRow("Watched threads", "Threads you follow", Icons.Outlined.Visibility) { nav.watched() }
-                        CardDivider()
-                        CardRow("Bookmarks", "Saved posts", Icons.Outlined.Bookmarks) {
-                            nav.web(BASE + "account/bookmarks", "Bookmarks")
-                        }
-                        CardDivider()
-                        CardRow("Profile page", "How others see you", Icons.Outlined.AccountCircle) {
-                            nav.web(BASE + "members/${me.userId}/", me.username)
-                        }
-                    }
-
-                    SectionLabel("Account settings")
-                    SectionCard {
-                        CardRow("Account details", "Email, avatar, about you", Icons.Outlined.Edit) {
-                            nav.web(BASE + "account/account-details", "Account details")
-                        }
-                        CardDivider()
-                        CardRow("Password and security", "Password, two-step verification", Icons.Outlined.Lock) {
-                            nav.web(BASE + "account/security", "Password and security")
-                        }
-                        CardDivider()
-                        CardRow("Privacy", "Who can see and contact you", Icons.Outlined.PrivacyTip) {
-                            nav.web(BASE + "account/privacy", "Privacy")
-                        }
-                        CardDivider()
-                        CardRow("Forum preferences", "Email and alert options on the forum", Icons.Outlined.Tune) {
-                            nav.web(BASE + "account/preferences", "Preferences")
-                        }
-                        CardDivider()
-                        CardRow("Signature", "Shown under your posts", Icons.Outlined.Draw) {
-                            nav.web(BASE + "account/signature", "Signature")
-                        }
                     }
                 }
 
@@ -214,7 +190,7 @@ fun AccountScreen(nav: Nav) {
                 TextButton(onClick = {
                     confirmLogout = false
                     val id = activeId ?: return@TextButton
-                    scope.launch { busy = true; accounts.logout(id); busy = false; version++ }
+                    scope.launch { busy = true; accounts.logout(id); cache.clear(); busy = false; version++ }
                 }) { Text("Log out") }
             },
             dismissButton = { TextButton(onClick = { confirmLogout = false }) { Text("Cancel") } },

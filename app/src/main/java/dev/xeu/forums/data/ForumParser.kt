@@ -154,9 +154,10 @@ object ForumParser {
     }
 
     fun threadPage(doc: Document, url: String): ThreadPage {
-        val posts = doc.select("article.message--post").mapNotNull { el ->
-            val id = el.attr("data-content").removePrefix("post-").toIntOrNull()
-                ?: el.id().removePrefix("js-post-").toIntOrNull() ?: return@mapNotNull null
+        // Thread posts and direct-message (conversation) messages share the same markup.
+        val posts = doc.select("article.message--post, article.message--conversationMessage").mapNotNull { el ->
+            val id = Regex("""\d+""").find(el.attr("data-content"))?.value?.toIntOrNull()
+                ?: Regex("""\d+""").find(el.id())?.value?.toIntOrNull() ?: return@mapNotNull null
             val body = el.selectFirst(".message-userContent .bbWrapper")
                 ?: el.selectFirst(".message-body .bbWrapper") ?: return@mapNotNull null
             val (html, images) = cleanBody(body)
@@ -234,9 +235,18 @@ object ForumParser {
                 link = link,
                 epoch = parseRssDate(item.selectFirst("pubDate")?.text()),
                 source = source,
-                author = item.selectFirst("dc|creator, creator, author")?.text().orEmpty(),
+                author = rssAuthor(item),
             )
         }
+    }
+
+    /** XenForo puts "invalid@example.com (username)" in <author>; prefer dc:creator, else keep the name only. */
+    private fun rssAuthor(item: org.jsoup.nodes.Element): String {
+        val creator = item.selectFirst("dc|creator")?.text()?.trim().orEmpty()
+        if (creator.isNotBlank() && '@' !in creator) return creator
+        val raw = item.selectFirst("author")?.text()?.trim().orEmpty()
+        Regex("""\((.+)\)\s*$""").find(raw)?.let { return it.groupValues[1].trim() }
+        return if ('@' in raw) "" else raw
     }
 
     private fun parseRssDate(s: String?): Long {

@@ -47,6 +47,9 @@ import androidx.navigation.navArgument
 import dev.xeu.forums.data.AppSettings
 import dev.xeu.forums.data.Http
 import dev.xeu.forums.data.normalizeForumUrl
+import dev.xeu.forums.data.ForumRepository
+import dev.xeu.forums.data.BASE
+import dev.xeu.forums.ui.ProfileScreen
 import dev.xeu.forums.data.SettingsStore
 import dev.xeu.forums.ui.AccountScreen
 import dev.xeu.forums.ui.AlertsScreen
@@ -57,7 +60,6 @@ import dev.xeu.forums.ui.DevicesScreen
 import dev.xeu.forums.ui.ForumScreen
 import dev.xeu.forums.ui.ForumsScreen
 import dev.xeu.forums.ui.LoginScreen
-import dev.xeu.forums.ui.RomsScreen
 import dev.xeu.forums.ui.SettingsScreen
 import dev.xeu.forums.ui.StartupUpdatePrompt
 import dev.xeu.forums.ui.ThreadScreen
@@ -120,7 +122,6 @@ class Nav(private val nav: NavHostController, private val context: android.conte
     fun conversations() = nav.navigate("conversations")
     fun watched() = nav.navigate("watched")
     fun search() = nav.navigate("search")
-    fun roms() = nav.navigate("roms") { launchSingleTop = true }
     fun web(url: String, title: String = "") =
         nav.navigate("web?url=${Uri.encode(url)}&title=${Uri.encode(title)}")
     fun tab(route: String) = nav.navigate(route) {
@@ -139,13 +140,21 @@ class Nav(private val nav: NavHostController, private val context: android.conte
         link(resultUrl)
     }
 
-    /** Opens every link inside the app: forum pages natively, everything else in the in-app browser. */
+    fun profile(url: String) = nav.navigate("profile?url=${Uri.encode(normalizeForumUrl(url))}")
+
+    /**
+     * Opens links inside the app: forum pages natively, other websites in the in-app browser.
+     * Xiaomi.EU pages the app can't show natively are not opened at all.
+     */
     fun link(raw: String) {
         val url = normalizeForumUrl(raw)
         when {
             !url.startsWith("http") -> {}
             !isForumUrl(url) -> web(url)
-            url.contains("/link-forums/") -> web(url)
+            url.contains("/attachments/") -> dev.xeu.forums.ui.Downloads.start(context, url)
+            url.contains("/conversations/") -> thread(ForumRepository.baseUrl(url) +
+                if (Regex("""/(page-\d+|post-\d+|message-\d+)""").containsMatchIn(url)) "" else "unread", 0)
+            url.contains("/members/") -> profile(url)
             url.contains("/threads/") || url.contains("/goto/post") || url.contains("/posts/") -> thread(url, 0)
             url.contains("/forums/") || url.contains("/categories/") -> forum(url)
             url.contains("/login") -> login()
@@ -153,7 +162,8 @@ class Nav(private val nav: NavHostController, private val context: android.conte
             url.contains("/watched/threads") -> watched()
             url.contains("/whats-new/") -> forum(url)
             url.contains("/search") -> search()
-            else -> web(url)
+            url.trimEnd('/') == BASE.trimEnd('/') -> tab("forums")
+            else -> android.widget.Toast.makeText(context, "This page isn't available in the app", android.widget.Toast.LENGTH_SHORT).show()
         }
     }
 }
@@ -184,7 +194,6 @@ private fun App(pending: Pending?, consumePending: () -> Unit) {
         when (p.open) {
             Notifier.OPEN_UPDATES -> showUpdate = true
             "alerts" -> n.alerts()
-            "roms" -> n.roms()
         }
         p.link?.let { n.link(it) }
         consumePending()
@@ -219,11 +228,14 @@ private fun App(pending: Pending?, consumePending: () -> Unit) {
             composable("forums") { ForumsScreen(n) }
             composable("devices") { DevicesScreen(n) }
             composable("devicePicker") { DevicePickerScreen(n) }
-            composable("roms") { RomsScreen(n) }
             composable("account") { AccountScreen(n) }
             composable("login") { LoginScreen(n) }
             composable("settings") { SettingsScreen(n) }
             composable("search") { SearchScreen(n) }
+            composable(
+                "profile?url={url}",
+                arguments = listOf(navArgument("url") { type = NavType.StringType }),
+            ) { e -> ProfileScreen(e.arguments?.getString("url").orEmpty(), n) }
             composable("alerts") { AlertsScreen(n) }
             composable("conversations") { ConversationsScreen(n) }
             composable("watched") { WatchedScreen(n) }

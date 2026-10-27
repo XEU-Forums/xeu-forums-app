@@ -94,15 +94,6 @@ fun DevicesScreen(nav: Nav) {
                             style = MaterialTheme.typography.bodyMedium,
                             color = accents.onHero.copy(alpha = 0.9f),
                         )
-                        Button(
-                            onClick = { nav.roms() },
-                            colors = ButtonDefaults.buttonColors(containerColor = Color.White, contentColor = Brand.OrangeDeep),
-                            modifier = Modifier.padding(top = 14.dp),
-                        ) {
-                            Icon(Icons.Outlined.SystemUpdate, null, Modifier.size(18.dp))
-                            Spacer(Modifier.size(8.dp))
-                            Text("Latest ROM builds")
-                        }
                         if (!list.isNullOrEmpty()) Row(
                             Modifier.padding(top = 12.dp).horizontalScroll(rememberScrollState()),
                             horizontalArrangement = Arrangement.spacedBy(8.dp),

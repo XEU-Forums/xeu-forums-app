@@ -23,6 +23,15 @@ private val bareHost = Regex("""^(https?://)xiaomi\.eu(?=[/:?#]|$)""", RegexOpti
  * The forum answers on both xiaomi.eu and www.xiaomi.eu, and feeds link to either. Cookies set on
  * one host aren't sent to the other, so every forum URL is normalized to www.xiaomi.eu.
  */
+/** Forum pages the app renders natively. Anything else on Xiaomi.EU isn't offered in the app. */
+fun isNativeForumLink(url: String): Boolean {
+    val u = normalizeForumUrl(url)
+    if (!Regex("""^https?://www\.xiaomi\.eu/community/""").containsMatchIn(u)) return false
+    return listOf("/threads/", "/posts/", "/goto/post", "/conversations/", "/forums/", "/categories/",
+        "/members/", "/whats-new/", "/watched/threads", "/account/alerts").any { it in u } ||
+        u.trimEnd('/') == BASE.trimEnd('/')
+}
+
 fun normalizeForumUrl(url: String): String = bareHost.replace(url.trim()) { "${it.groupValues[1]}www.xiaomi.eu" }
 
 /**

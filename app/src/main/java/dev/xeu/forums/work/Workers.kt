@@ -12,7 +12,6 @@ import androidx.work.WorkerParameters
 import dev.xeu.forums.data.Accounts
 import dev.xeu.forums.data.ForumRepository
 import dev.xeu.forums.data.Http
-import dev.xeu.forums.data.Prefs
 import dev.xeu.forums.data.SettingsStore
 import dev.xeu.forums.update.Updater
 import java.util.concurrent.TimeUnit
@@ -42,8 +41,8 @@ object Scheduler {
             wm.enqueueUniquePeriodicWork(UPDATE, ExistingPeriodicWorkPolicy.UPDATE, req)
         } else wm.cancelUniqueWork(UPDATE)
 
-        val t = Prefs(context).trackerNow()
-        RomTracker.schedule(context, t.enabled, t.intervalHours)
+        // The ROM tracker was removed; stop any job left over from older versions.
+        wm.cancelUniqueWork("rom_check")
     }
 
     fun checkForumNow(context: Context) {
@@ -76,7 +75,9 @@ class ForumNotificationWorker(ctx: Context, params: WorkerParameters) : Coroutin
                     val alerts = ForumRepository.alerts()
                     val maxId = alerts.maxOfOrNull { it.id } ?: last
                     if (last >= 0) {
-                        val fresh = alerts.filter { it.id > last && it.unread }.sortedBy { it.id }
+                        val fresh = alerts.filter {
+                            it.id > last && it.unread && it.link?.let(dev.xeu.forums.data::isNativeForumLink) == true
+                        }.sortedBy { it.id }
                         fresh.takeLast(6).forEach { a ->
                             Notifier.post(
                                 context, Notifier.CH_ALERTS, ("a" + a.id).hashCode(),

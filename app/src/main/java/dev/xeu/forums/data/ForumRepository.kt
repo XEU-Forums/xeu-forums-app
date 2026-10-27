@@ -6,11 +6,7 @@ import kotlinx.coroutines.coroutineScope
 import okhttp3.FormBody
 import org.json.JSONObject
 
-const val SF_RSS =
-    "https://sourceforge.net/projects/xiaomi-eu-multilang-miui-roms/rss?path=/xiaomi.eu&limit=200"
 const val RELEASE_FORUM = BASE + "forums/rom-releases.103/"
-const val HYPEROS_RELEASE_FORUM = BASE + "forums/hyperos.228/"
-const val ANNOUNCEMENTS_FORUM = BASE + "forums/announcements.221/"
 
 class PostException(msg: String) : Exception(msg)
 
@@ -81,20 +77,6 @@ object ForumRepository {
     fun matchesDevice(item: FeedItem, devices: List<Device>): Device? =
         devices.firstOrNull { d -> d.codenames.any { codenameRegex(it).containsMatchIn(item.title) } }
 
-    /** ROM files (SourceForge) and release threads (forum). */
-    suspend fun romSources(): Pair<List<FeedItem>, List<FeedItem>> = coroutineScope {
-        val files = async {
-            runCatching { rss(SF_RSS, "SourceForge") }.getOrDefault(emptyList())
-                .filter { it.title.endsWith(".zip", ignoreCase = true) }
-        }
-        val threads = async {
-            listOf(HYPEROS_RELEASE_FORUM to "ROM releases", ANNOUNCEMENTS_FORUM to "Announcements").map { (u, s) ->
-                async { runCatching { rss(u + "index.rss", s) }.getOrDefault(emptyList()) }
-            }.awaitAll().flatten()
-        }
-        files.await() to threads.await().sortedByDescending { it.epoch }
-    }
-
     // ---- Posting (requires login) ----
 
     private fun checkJson(raw: String): String {
@@ -111,7 +93,8 @@ object ForumRepository {
     }
 
     suspend fun postReply(threadUrl: String, message: String): String {
-        val latest = baseUrl(threadUrl) + "latest"
+        // Direct-message conversations have no "latest" route; their pages carry the reply form too.
+        val latest = baseUrl(threadUrl) + if ("/conversations/" in threadUrl) "" else "latest"
         val html = Http.get(latest)
         val doc = ForumParser.doc(html, latest)
         if (!ForumParser.session(doc).loggedIn) throw PostException("You're not logged in.")
@@ -153,6 +136,11 @@ object ForumRepository {
     suspend fun me(): Me? {
         val (html, final) = Http.fetch(BASE)
         return AccountParser.me(ForumParser.doc(html, final))
+    }
+
+    suspend fun profileByUrl(url: String): Profile {
+        val (html, final) = Http.fetch(baseUrl(url))
+        return AccountParser.profile(ForumParser.doc(html, final), final)
     }
 
     suspend fun profile(userId: Int): Profile {

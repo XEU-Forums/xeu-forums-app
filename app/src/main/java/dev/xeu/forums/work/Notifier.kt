@@ -16,7 +16,6 @@ import dev.xeu.forums.MainActivity
 import dev.xeu.forums.R
 
 object Notifier {
-    const val CH_ROMS = "rom_releases"
     const val CH_ALERTS = "forum_alerts"
     const val CH_CONVERSATIONS = "conversations"
     const val CH_UPDATES = "app_updates"
@@ -27,14 +26,13 @@ object Notifier {
 
     fun createChannels(context: Context) {
         val nm = context.getSystemService(NotificationManager::class.java)
+        nm.deleteNotificationChannel("rom_releases") // removed feature
         nm.createNotificationChannels(
             listOf(
                 NotificationChannel(CH_ALERTS, "Forum alerts", NotificationManager.IMPORTANCE_DEFAULT)
                     .apply { description = "Replies, quotes, mentions and reactions on Xiaomi.EU" },
                 NotificationChannel(CH_CONVERSATIONS, "Direct messages", NotificationManager.IMPORTANCE_HIGH)
                     .apply { description = "New messages in your Xiaomi.EU conversations" },
-                NotificationChannel(CH_ROMS, "ROM releases", NotificationManager.IMPORTANCE_DEFAULT)
-                    .apply { description = "New Xiaomi.EU builds for your devices and new release threads" },
                 NotificationChannel(CH_UPDATES, "App updates", NotificationManager.IMPORTANCE_LOW)
                     .apply { description = "A new version of XEU Forums is available" },
             )
