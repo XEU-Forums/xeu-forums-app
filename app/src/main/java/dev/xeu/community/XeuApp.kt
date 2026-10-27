@@ -4,8 +4,8 @@ import android.app.Application
 import coil.ImageLoader
 import coil.ImageLoaderFactory
 import dev.xeu.community.data.Http
-import dev.xeu.community.data.Prefs
-import dev.xeu.community.work.RomTracker
+import dev.xeu.community.work.Notifier
+import dev.xeu.community.work.Scheduler
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -17,11 +17,8 @@ class XeuApp : Application(), ImageLoaderFactory {
     override fun onCreate() {
         super.onCreate()
         Http.init(this)
-        RomTracker.createChannel(this)
-        appScope.launch {
-            val s = Prefs(this@XeuApp).trackerNow()
-            RomTracker.schedule(this@XeuApp, s.enabled, s.intervalHours)
-        }
+        Notifier.createChannels(this)
+        appScope.launch { Scheduler.applyAll(this@XeuApp) }
     }
 
     // Images go through the same client, so attachments that need a login still load.

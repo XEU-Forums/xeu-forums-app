@@ -127,4 +127,51 @@ object ForumRepository {
     }
 
     suspend fun session(): SessionInfo = ForumParser.session(ForumParser.doc(Http.get(BASE), BASE))
+
+    // ---- Account ----
+
+    /** The signed-in user, or null if the session isn't logged in. */
+    suspend fun me(): Me? {
+        val (html, final) = Http.fetch(BASE)
+        return AccountParser.me(ForumParser.doc(html, final))
+    }
+
+    suspend fun profile(userId: Int): Profile {
+        val (html, final) = Http.fetch(BASE + "members/$userId/")
+        return AccountParser.profile(ForumParser.doc(html, final), final)
+    }
+
+    suspend fun alerts(): List<Alert> {
+        val (html, final) = Http.fetch(BASE + "account/alerts")
+        val doc = ForumParser.doc(html, final)
+        if (!ForumParser.session(doc).loggedIn) throw PostException("You're not logged in.")
+        return AccountParser.alerts(doc)
+    }
+
+    suspend fun markAlertsRead() {
+        val (html, final) = Http.fetch(BASE + "account/alerts")
+        val token = ForumParser.csrf(ForumParser.doc(html, final))
+        val body = FormBody.Builder().add("_xfToken", token).add("_xfResponseType", "json").build()
+        Http.postAjax(BASE + "account/alerts/mark-read", body, final)
+    }
+
+    suspend fun conversations(): List<Conversation> {
+        val (html, final) = Http.fetch(BASE + "conversations/")
+        val doc = ForumParser.doc(html, final)
+        if (!ForumParser.session(doc).loggedIn) throw PostException("You're not logged in.")
+        return AccountParser.conversations(doc)
+    }
+
+    suspend fun watchedThreads(page: Int): ForumPage {
+        val u = BASE + "watched/threads" + if (page > 1) "?page=$page" else ""
+        val (html, final) = Http.fetch(u)
+        return AccountParser.watched(ForumParser.doc(html, final), final)
+    }
+
+    /** Ends the session on the forum, like tapping "Log out" on the website. */
+    suspend fun logoutOnForum() {
+        val (html, final) = Http.fetch(BASE)
+        val token = ForumParser.csrf(ForumParser.doc(html, final))
+        if (token.isNotBlank()) runCatching { Http.get(BASE + "logout/?t=" + java.net.URLEncoder.encode(token, "UTF-8")) }
+    }
 }

@@ -6,15 +6,18 @@ plugins {
 
 android {
     namespace = "dev.xeu.community"
-    compileSdk = 35
+    compileSdk = 36
 
     defaultConfig {
         applicationId = "dev.xeu.community"
         minSdk = 26
-        targetSdk = 35
+        targetSdk = 36
         // CI passes the run number so every build installs over the previous one.
         versionCode = (System.getenv("VERSION_CODE") ?: "1").toInt()
         versionName = System.getenv("VERSION_NAME") ?: "1.0"
+        // Which release channel this build belongs to; the updater follows it by default.
+        buildConfigField("String", "CHANNEL", "\"${System.getenv("CHANNEL") ?: "dev"}\"")
+        buildConfigField("String", "GITHUB_REPO", "\"Xiaomi-EU-Community/xiaomi-eu-app\"")
     }
 
     // CI writes the keystore from repo secrets. Without them (e.g. local builds) the debug key is used.
@@ -39,7 +42,10 @@ android {
         targetCompatibility = JavaVersion.VERSION_17
     }
     kotlinOptions { jvmTarget = "17" }
-    buildFeatures { compose = true }
+    buildFeatures {
+        compose = true
+        buildConfig = true
+    }
     lint {
         abortOnError = false
         checkReleaseBuilds = false
@@ -47,10 +53,10 @@ android {
 }
 
 dependencies {
-    val composeBom = platform("androidx.compose:compose-bom:2024.12.01")
+    val composeBom = platform("androidx.compose:compose-bom:2025.08.00")
     implementation(composeBom)
     implementation("androidx.compose.ui:ui")
-    implementation("androidx.compose.material3:material3")
+    implementation("androidx.compose.material3:material3:1.4.0")
     implementation("androidx.compose.material:material-icons-extended")
     implementation("androidx.compose.ui:ui-tooling-preview")
     debugImplementation("androidx.compose.ui:ui-tooling")

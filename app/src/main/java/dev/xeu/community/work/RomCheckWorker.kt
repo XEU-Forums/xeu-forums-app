@@ -1,17 +1,9 @@
 package dev.xeu.community.work
 
-import android.Manifest
-import android.app.NotificationChannel
-import android.app.NotificationManager
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
-import android.content.pm.PackageManager
 import android.net.Uri
-import android.os.Build
-import androidx.core.app.NotificationCompat
-import androidx.core.app.NotificationManagerCompat
-import androidx.core.content.ContextCompat
 import androidx.work.Constraints
 import androidx.work.CoroutineWorker
 import androidx.work.ExistingPeriodicWorkPolicy
@@ -20,24 +12,14 @@ import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkManager
 import androidx.work.WorkerParameters
-import dev.xeu.community.MainActivity
-import dev.xeu.community.R
 import dev.xeu.community.data.FeedItem
 import dev.xeu.community.data.ForumRepository
 import dev.xeu.community.data.Http
 import dev.xeu.community.data.Prefs
 import java.util.concurrent.TimeUnit
 
-const val CHANNEL_ROMS = "rom_releases"
-
 object RomTracker {
     private const val WORK = "rom_check"
-
-    fun createChannel(context: Context) {
-        val ch = NotificationChannel(CHANNEL_ROMS, "ROM releases", NotificationManager.IMPORTANCE_DEFAULT)
-        ch.description = "New xiaomi.eu builds for your devices and new release threads"
-        context.getSystemService(NotificationManager::class.java).createNotificationChannel(ch)
-    }
 
     fun schedule(context: Context, enabled: Boolean, hours: Int) {
         val wm = WorkManager.getInstance(context)
@@ -77,41 +59,26 @@ object RomTracker {
         return if (seeded) fresh else emptyList()
     }
 
-    @android.annotation.SuppressLint("MissingPermission") // checked at the top
     fun notify(context: Context, items: List<FeedItem>) {
         if (items.isEmpty()) return
-        if (Build.VERSION.SDK_INT >= 33 &&
-            ContextCompat.checkSelfPermission(context, Manifest.permission.POST_NOTIFICATIONS) !=
-            PackageManager.PERMISSION_GRANTED
-        ) return
-        val nm = NotificationManagerCompat.from(context)
         items.take(5).forEach { item ->
             val isFile = item.source == "SourceForge"
-            val intent = if (isFile) Intent(Intent.ACTION_VIEW, Uri.parse(item.link))
-                else Intent(context, MainActivity::class.java).setData(Uri.parse(item.link))
-            val pi = PendingIntent.getActivity(context, item.guid.hashCode(), intent,
-                PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT)
-            val n = NotificationCompat.Builder(context, CHANNEL_ROMS)
-                .setSmallIcon(R.drawable.ic_launcher_foreground)
-                .setContentTitle(if (isFile) "New xiaomi.eu build" else "New post in ${item.source}")
-                .setContentText(item.title.substringAfterLast('/'))
-                .setStyle(NotificationCompat.BigTextStyle().bigText(item.title.substringAfterLast('/')))
-                .setContentIntent(pi)
-                .setAutoCancel(true)
-                .setGroup("roms")
-                .build()
-            runCatching { nm.notify(item.guid.hashCode(), n) }
+            val tap = if (isFile) PendingIntent.getActivity(
+                context, item.guid.hashCode(), Intent(Intent.ACTION_VIEW, Uri.parse(item.link)),
+                PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT,
+            ) else Notifier.appIntent(context, item.link)
+            val name = item.title.substringAfterLast('/')
+            Notifier.post(
+                context, Notifier.CH_ROMS, item.guid.hashCode(),
+                if (isFile) "New xiaomi.eu build" else "New post in ${item.source}",
+                name, tap, group = "roms",
+            )
         }
         if (items.size > 5) {
-            val n = NotificationCompat.Builder(context, CHANNEL_ROMS)
-                .setSmallIcon(R.drawable.ic_launcher_foreground)
-                .setContentTitle("${items.size} new ROM updates")
-                .setContentText("Open the ROMs tab to see them all")
-                .setContentIntent(PendingIntent.getActivity(context, 0,
-                    Intent(context, MainActivity::class.java), PendingIntent.FLAG_IMMUTABLE))
-                .setGroup("roms").setGroupSummary(true).setAutoCancel(true)
-                .build()
-            runCatching { nm.notify(1, n) }
+            Notifier.postSummary(
+                context, Notifier.CH_ROMS, "roms", 1, "${items.size} new ROM updates",
+                Notifier.appIntent(context, null, "roms"),
+            )
         }
     }
 }

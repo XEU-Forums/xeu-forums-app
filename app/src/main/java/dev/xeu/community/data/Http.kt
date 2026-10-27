@@ -62,10 +62,7 @@ object Http {
         client.newCall(Request.Builder().url(url).build()).execute().use { r ->
             if (!r.isSuccessful) throw IOException("HTTP ${r.code} for $url")
             val body = r.body?.string() ?: ""
-            when {
-                body.contains("data-logged-in=\"true\"") -> loggedIn.value = true
-                body.contains("data-logged-in=\"false\"") -> loggedIn.value = false
-            }
+            if (r.request.url.host.endsWith("xiaomi.eu")) observe(body)
             body to r.request.url.toString()
         }
     }
@@ -87,6 +84,28 @@ object Http {
      */
     val loggedIn = mutableStateOf<Boolean?>(null)
 
+    /** Unread alerts and conversations from the last forum page we loaded. */
+    val unreadAlerts = mutableStateOf(0)
+    val unreadConversations = mutableStateOf(0)
+
+    private val badgeTag = Regex("""<a\b[^>]*js-badge--(alerts|conversations)[^>]*>""")
+    private val badgeValue = Regex("""data-badge="(\d+)"""")
+
+    /** Keeps login state and unread badges current from every page we fetch. */
+    private fun observe(body: String) {
+        when {
+            body.contains("data-logged-in=\"true\"") -> loggedIn.value = true
+            body.contains("data-logged-in=\"false\"") -> {
+                loggedIn.value = false; unreadAlerts.value = 0; unreadConversations.value = 0
+            }
+            else -> return
+        }
+        badgeTag.findAll(body).forEach { m ->
+            val n = badgeValue.find(m.value)?.groupValues?.get(1)?.toIntOrNull() ?: 0
+            if (m.groupValues[1] == "alerts") unreadAlerts.value = n else unreadConversations.value = n
+        }
+    }
+
     fun isLoggedIn(): Boolean = loggedIn.value ?: hasRememberCookie()
 
     private fun hasRememberCookie(): Boolean {
@@ -94,9 +113,5 @@ object Http {
         return c.split(';').any { it.trim().startsWith("xf_user=") }
     }
 
-    fun logout() {
-        CookieManager.getInstance().removeAllCookies(null)
-        CookieManager.getInstance().flush()
-        loggedIn.value = false
-    }
+
 }
