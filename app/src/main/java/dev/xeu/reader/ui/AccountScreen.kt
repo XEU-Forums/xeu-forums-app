@@ -60,7 +60,7 @@ fun AccountScreen(nav: Nav) {
                 Button(onClick = { nav.login() }) { Text("Log in to xiaomi.eu") }
             }
             Text(
-                "XEU Reader is an unofficial client. Your password is entered on the forum's own login page; " +
+                "XEU Community is an unofficial client. Your password is entered on the forum's own login page; " +
                     "the app only keeps the session cookie the forum sets.",
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,

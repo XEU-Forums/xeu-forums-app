@@ -1,4 +1,4 @@
-# XEU Reader
+# XEU Community
 
 An unofficial Android client for the [xiaomi.eu community forum](https://xiaomi.eu/community/). Not affiliated with Xiaomi or xiaomi.eu.
 
@@ -23,7 +23,7 @@ Open the folder in Android Studio (Ladybug or newer), let Gradle sync, and press
 
 - Requires Android 8.0+.
 - Logging in: tick **Stay logged in** on the login page so the session survives app restarts. Google sign-in is blocked inside in-app browsers, so use your forum username/email and password.
-- On Android 12+, to open xiaomi.eu links in the app: *Settings → Apps → XEU Reader → Open by default → Add links*.
+- On Android 12+, to open xiaomi.eu links in the app: *Settings → Apps → XEU Community → Open by default → Add links*.
 - The app reads the public HTML pages and RSS feeds. If the forum changes its theme, selectors in `ForumParser.kt` may need updating.
 - Please be a good citizen: the tracker's minimum interval is 1 hour, and the forum's rules (English only, no ROM ETA questions) apply to anything you post.
 

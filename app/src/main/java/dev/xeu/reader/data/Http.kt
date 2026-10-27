@@ -44,7 +44,7 @@ object Http {
     fun init(context: Context) {
         if (::client.isInitialized) return
         userAgent = runCatching { WebSettings.getDefaultUserAgent(context) }
-            .getOrDefault("Mozilla/5.0 (Linux; Android) Mobile") + " XEUReader/1.0"
+            .getOrDefault("Mozilla/5.0 (Linux; Android) Mobile") + " XEUCommunity/1.0"
         client = OkHttpClient.Builder()
             .cookieJar(WebViewCookieJar())
             .connectTimeout(20, TimeUnit.SECONDS)
