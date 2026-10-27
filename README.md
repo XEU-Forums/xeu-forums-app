@@ -4,17 +4,23 @@ An unofficial Android client for the [xiaomi.eu community forum](https://xiaomi.
 
 ## Features
 
-- **Forum reader** – browse every category, forum and thread in a native UI with paging, images, quotes and "jump to latest".
-- **My devices** – pick the phones you own (from the forum's device list with codenames) and get a combined feed of their forums.
-- **ROM tracker** – checks xiaomi.eu's SourceForge file feed and the HyperOS release forum in the background (every 1–24 h) and notifies you when a build for one of your codenames appears.
-- **Log in & post** – log in on the forum's own login page (inside the app), then reply, quote posts and start threads using BB code.
+- **Forum reader** – every category, forum and thread in a native UI with paging, images, quotes and "jump to latest".
+- **My devices** – pick your phones (by codename) and get a combined feed of their forums.
+- **ROM tracker** – background checks of xiaomi.eu's SourceForge feed and release forum, with notifications for your devices.
+- **Account** – log in on the forum's own page, switch between several accounts, see your profile, alerts, direct messages, watched threads, bookmarks and account settings.
+- **Notifications** – forum alerts (replies, quotes, mentions, reactions) and new direct messages, checked every 15 min–3 h.
+- **Material You** – Material 3 with dynamic color from your wallpaper (Android 12+), light/dark/system theme and a themed icon.
+- **In-app updates** – stable and dev channels from GitHub releases.
 
 ## Get the APK
 
-### Option A – Dev release
-Every push to the `dev` branch builds an APK and publishes it as the **dev** pre-release (Releases page). Download the `.apk` from there and install it; later dev builds install over it.
+### Option A – Releases
+- **Dev:** every push to `dev` replaces the **dev** pre-release.
+- **Stable:** push a tag like `v1.0.0` (an annotated tag's message becomes the release notes) to publish a stable release.
 
-Signing uses two repo secrets, `KEYSTORE_BASE64` and `KEYSTORE_PASSWORD` (Settings → Secrets and variables → Actions). Without them each build gets a throwaway key and won't update over the previous install.
+Each release has the APK plus `update.json`. The app checks the GitHub API first; if that fails (for example GitHub's 60 requests/hour limit), it reads `update.json` through the release download link instead, which isn't rate limited. Downloads are checked against the SHA-256 before installing.
+
+Signing uses the repo secrets `KEYSTORE_BASE64` and `KEYSTORE_PASSWORD`, so every build installs over the previous one.
 
 ### Option B – Android Studio
 Open the folder in Android Studio (Ladybug or newer), let Gradle sync, and press Run.
