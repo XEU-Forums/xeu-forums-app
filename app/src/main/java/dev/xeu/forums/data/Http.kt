@@ -17,6 +17,14 @@ import java.util.concurrent.TimeUnit
 
 const val BASE = "https://www.xiaomi.eu/community/"
 
+private val bareHost = Regex("""^(https?://)xiaomi\.eu(?=[/:?#]|$)""", RegexOption.IGNORE_CASE)
+
+/**
+ * The forum answers on both xiaomi.eu and www.xiaomi.eu, and feeds link to either. Cookies set on
+ * one host aren't sent to the other, so every forum URL is normalized to www.xiaomi.eu.
+ */
+fun normalizeForumUrl(url: String): String = bareHost.replace(url.trim()) { "${it.groupValues[1]}www.xiaomi.eu" }
+
 /**
  * Shares cookies with the WebView, so logging in through the login page
  * also logs in every request the app makes.
@@ -30,8 +38,15 @@ class WebViewCookieJar : CookieJar {
     }
 
     override fun loadForRequest(url: HttpUrl): List<Cookie> {
-        val raw = cm.getCookie(url.toString()) ?: return emptyList()
-        return raw.split(';').mapNotNull { Cookie.parse(url, it.trim()) }
+        val sources = if (url.host.endsWith("xiaomi.eu")) {
+            // Include cookies stored for either host so a session from one works on the other.
+            listOf(url.toString(), url.toString().replaceFirst("://www.xiaomi.eu", "://xiaomi.eu"),
+                url.toString().replaceFirst("://xiaomi.eu", "://www.xiaomi.eu")).distinct()
+        } else listOf(url.toString())
+        return sources.mapNotNull { cm.getCookie(it) }
+            .flatMap { it.split(';') }
+            .mapNotNull { Cookie.parse(url, it.trim()) }
+            .distinctBy { it.name }
     }
 }
 
@@ -50,7 +65,12 @@ object Http {
             .connectTimeout(20, TimeUnit.SECONDS)
             .readTimeout(30, TimeUnit.SECONDS)
             .addInterceptor { chain ->
-                chain.proceed(chain.request().newBuilder().header("User-Agent", userAgent).build())
+                val req = chain.request()
+                val b = req.newBuilder().header("User-Agent", userAgent)
+                if (req.url.host.equals("xiaomi.eu", ignoreCase = true)) {
+                    b.url(req.url.newBuilder().host("www.xiaomi.eu").build())
+                }
+                chain.proceed(b.build())
             }
             .build()
     }
@@ -106,11 +126,27 @@ object Http {
         }
     }
 
+    /**
+     * Copies every forum cookie onto the shared .xiaomi.eu domain, so the WebView (login, account
+     * pages) and the app's own requests always see the same session on both hosts.
+     */
+    fun unifyForumCookies() {
+        val cm = CookieManager.getInstance()
+        val all = listOf("https://www.xiaomi.eu/", "https://xiaomi.eu/").mapNotNull { cm.getCookie(it) }
+            .flatMap { it.split(';') }.map { it.trim() }.filter { '=' in it }
+            .distinctBy { it.substringBefore('=') }
+        all.forEach { kv ->
+            cm.setCookie("https://www.xiaomi.eu/", "$kv; Domain=.xiaomi.eu; Path=/; Secure; Max-Age=31536000")
+        }
+        cm.flush()
+    }
+
     fun isLoggedIn(): Boolean = loggedIn.value ?: hasRememberCookie()
 
     private fun hasRememberCookie(): Boolean {
-        val c = CookieManager.getInstance().getCookie(BASE) ?: return false
-        return c.split(';').any { it.trim().startsWith("xf_user=") }
+        val cm = CookieManager.getInstance()
+        return listOf(BASE, "https://xiaomi.eu/community/").mapNotNull { cm.getCookie(it) }
+            .any { c -> c.split(';').any { it.trim().startsWith("xf_user=") } }
     }
 
 

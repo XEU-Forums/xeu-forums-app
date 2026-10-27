@@ -46,6 +46,7 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import dev.xeu.forums.data.AppSettings
 import dev.xeu.forums.data.Http
+import dev.xeu.forums.data.normalizeForumUrl
 import dev.xeu.forums.data.SettingsStore
 import dev.xeu.forums.ui.AccountScreen
 import dev.xeu.forums.ui.AlertsScreen
@@ -101,14 +102,14 @@ private data class Tab(val route: String, val label: String, val icon: ImageVect
 private val tabs = listOf(
     Tab("forums", "Forums", Icons.Outlined.Forum, Icons.Filled.Forum),
     Tab("devices", "My devices", Icons.Outlined.PhoneAndroid, Icons.Filled.PhoneAndroid),
-    Tab("roms", "ROMs", Icons.Outlined.SystemUpdate, Icons.Filled.SystemUpdate),
     Tab("account", "Account", Icons.Outlined.AccountCircle, Icons.Filled.AccountCircle),
 )
 
 /** Navigation helpers shared by every screen. */
 class Nav(private val nav: NavHostController, private val context: android.content.Context) {
-    fun forum(url: String) = nav.navigate("forum?url=${Uri.encode(url)}")
-    fun thread(url: String, page: Int = 0) = nav.navigate("thread?url=${Uri.encode(url)}&page=$page")
+    fun forum(url: String) = nav.navigate("forum?url=${Uri.encode(normalizeForumUrl(url))}")
+    fun thread(url: String, page: Int = 0) =
+        nav.navigate("thread?url=${Uri.encode(normalizeForumUrl(url))}&page=$page")
     fun reply(threadUrl: String, quote: String = "") =
         nav.navigate("compose?mode=reply&url=${Uri.encode(threadUrl)}&quote=${Uri.encode(quote)}")
     fun newThread(forumUrl: String) = nav.navigate("compose?mode=thread&url=${Uri.encode(forumUrl)}&quote=")
@@ -119,6 +120,7 @@ class Nav(private val nav: NavHostController, private val context: android.conte
     fun conversations() = nav.navigate("conversations")
     fun watched() = nav.navigate("watched")
     fun search() = nav.navigate("search")
+    fun roms() = nav.navigate("roms") { launchSingleTop = true }
     fun web(url: String, title: String = "") =
         nav.navigate("web?url=${Uri.encode(url)}&title=${Uri.encode(title)}")
     fun tab(route: String) = nav.navigate(route) {
@@ -138,7 +140,8 @@ class Nav(private val nav: NavHostController, private val context: android.conte
     }
 
     /** Opens every link inside the app: forum pages natively, everything else in the in-app browser. */
-    fun link(url: String) {
+    fun link(raw: String) {
+        val url = normalizeForumUrl(raw)
         when {
             !url.startsWith("http") -> {}
             !isForumUrl(url) -> web(url)
@@ -181,7 +184,7 @@ private fun App(pending: Pending?, consumePending: () -> Unit) {
         when (p.open) {
             Notifier.OPEN_UPDATES -> showUpdate = true
             "alerts" -> n.alerts()
-            "roms" -> n.tab("roms")
+            "roms" -> n.roms()
         }
         p.link?.let { n.link(it) }
         consumePending()

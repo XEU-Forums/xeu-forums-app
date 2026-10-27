@@ -1,16 +1,12 @@
 package dev.xeu.forums.ui
 
 import android.app.Activity
-import android.os.Build
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.ColorScheme
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Shapes
 import androidx.compose.material3.Typography
 import androidx.compose.material3.darkColorScheme
-import androidx.compose.material3.dynamicDarkColorScheme
-import androidx.compose.material3.dynamicLightColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
@@ -18,7 +14,6 @@ import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -106,20 +101,6 @@ private val Dark = darkColorScheme(
     surfaceContainerHighest = Color(0xFF362E2A),
 )
 
-/** Monet neutrals and containers from the wallpaper, with the orange brand accent on top. */
-private fun ColorScheme.withOrange(dark: Boolean): ColorScheme =
-    if (dark) copy(
-        primary = Dark.primary, onPrimary = Dark.onPrimary,
-        primaryContainer = Dark.primaryContainer, onPrimaryContainer = Dark.onPrimaryContainer,
-        inversePrimary = Light.primary, surfaceTint = Dark.primary,
-    ) else copy(
-        primary = Light.primary, onPrimary = Light.onPrimary,
-        primaryContainer = Light.primaryContainer, onPrimaryContainer = Light.onPrimaryContainer,
-        inversePrimary = Dark.primary, surfaceTint = Light.primary,
-    )
-
-val supportsDynamicColor get() = Build.VERSION.SDK_INT >= Build.VERSION_CODES.S
-
 private val AppTypography = Typography().let { t ->
     t.copy(
         displaySmall = t.displaySmall.copy(fontWeight = FontWeight.Bold, letterSpacing = (-0.5).sp),
@@ -149,15 +130,8 @@ fun XeuTheme(settings: AppSettings = AppSettings(), content: @Composable () -> U
         ThemeMode.LIGHT -> false
         ThemeMode.DARK -> true
     }
-    val context = LocalContext.current
-    val scheme = when {
-        settings.dynamicColor && supportsDynamicColor -> {
-            val monet = if (dark) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
-            if (settings.orangeAccent) monet.withOrange(dark) else monet
-        }
-        dark -> Dark
-        else -> Light
-    }
+    // Always the XEU orange palette (wallpaper/Monet colors are intentionally not used).
+    val scheme = if (dark) Dark else Light
     val accents = Accents(
         heroGradient = if (dark) Brush.linearGradient(listOf(Color(0xFFB34300), Color(0xFF6E2400)))
         else Brush.linearGradient(listOf(Brand.OrangeSoft, Brand.OrangeDeep)),

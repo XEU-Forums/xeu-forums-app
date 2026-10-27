@@ -192,7 +192,7 @@ fun WebScreen(url: String, title: String, nav: Nav) {
 
     ScreenScaffold(
         title = pageTitle.ifBlank { "Loading…" },
-        subtitle = Uri.parse(currentUrl).host?.removePrefix("www."),
+        subtitle = Uri.parse(currentUrl).host?.removePrefix("www.")?.let { if (it == "xiaomi.eu") "Xiaomi.EU" else it },
         onBack = { nav.back() },
         actions = {
             IconButton(onClick = { webView?.reload() }) { Icon(Icons.Outlined.Refresh, "Reload") }

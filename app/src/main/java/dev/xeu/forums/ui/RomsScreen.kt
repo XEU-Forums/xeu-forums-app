@@ -19,6 +19,7 @@ import androidx.compose.material.icons.outlined.Campaign
 import androidx.compose.material.icons.outlined.Download
 import androidx.compose.material.icons.outlined.PhoneAndroid
 import androidx.compose.material.icons.outlined.Refresh
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
@@ -91,6 +92,14 @@ fun RomsScreen(nav: Nav) {
                 item {
                     HeroHeader {
                         Row(verticalAlignment = Alignment.CenterVertically) {
+                            androidx.compose.material3.IconButton(
+                                onClick = { nav.back() },
+                                colors = androidx.compose.material3.IconButtonDefaults.iconButtonColors(
+                                    containerColor = Color.White.copy(alpha = 0.18f)),
+                                modifier = Modifier.padding(end = 12.dp),
+                            ) {
+                                Icon(androidx.compose.material.icons.Icons.AutoMirrored.Filled.ArrowBack, "Back", tint = accents.onHero)
+                            }
                             Column(Modifier.weight(1f)) {
                                 Text("ROM TRACKER", style = SectionLabelStyle, color = accents.onHero.copy(alpha = 0.8f))
                                 Text("Latest builds", style = MaterialTheme.typography.headlineMedium, color = accents.onHero)
@@ -210,7 +219,7 @@ fun RomsScreen(nav: Nav) {
                 }
                 item {
                     Text(
-                        "Builds come from xiaomi.eu's public SourceForge feed. Always read the release thread before flashing.",
+                        "Builds come from Xiaomi.EU's public SourceForge feed. Always read the release thread before flashing.",
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.outline,
                         modifier = Modifier.padding(20.dp),

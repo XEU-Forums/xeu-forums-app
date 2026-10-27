@@ -11,7 +11,6 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Code
-import androidx.compose.material.icons.outlined.ColorLens
 import androidx.compose.material.icons.outlined.DarkMode
 import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material.icons.outlined.Mail
@@ -20,7 +19,6 @@ import androidx.compose.material.icons.outlined.NotificationsActive
 import androidx.compose.material.icons.outlined.Schedule
 import androidx.compose.material.icons.outlined.SystemUpdate
 import androidx.compose.material.icons.outlined.Update
-import androidx.compose.material.icons.outlined.Wallpaper
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SegmentedButton
 import androidx.compose.material3.SegmentedButtonDefaults
@@ -67,19 +65,6 @@ fun SettingsScreen(nav: Nav) {
                     listOf(ThemeMode.SYSTEM to "System", ThemeMode.LIGHT to "Light", ThemeMode.DARK to "Dark"),
                     s.themeMode,
                 ) { m -> change { it.copy(themeMode = m) } }
-                CardDivider()
-                SwitchRow(
-                    Icons.Outlined.Wallpaper, "Wallpaper colors",
-                    if (supportsDynamicColor) "Material You colors from your wallpaper" else "Needs Android 12 or newer",
-                    s.dynamicColor && supportsDynamicColor, enabled = supportsDynamicColor,
-                ) { v -> change { it.copy(dynamicColor = v) } }
-                CardDivider()
-                SwitchRow(
-                    Icons.Outlined.ColorLens, "Orange accent",
-                    "Keep Xiaomi.EU orange for buttons and highlights",
-                    s.orangeAccent || !(s.dynamicColor && supportsDynamicColor),
-                    enabled = s.dynamicColor && supportsDynamicColor,
-                ) { v -> change { it.copy(orangeAccent = v) } }
             }
 
             SectionLabel("Notifications")
@@ -98,7 +83,7 @@ fun SettingsScreen(nav: Nav) {
                     ) { m -> change(reschedule = true) { it.copy(forumCheckMinutes = m) } }
                 }
                 CardDivider()
-                CardRow("ROM release alerts", "Choose devices and frequency", Icons.Outlined.SystemUpdate) { nav.tab("roms") }
+                CardRow("ROM release alerts", "Builds for your devices and how often to check", Icons.Outlined.SystemUpdate) { nav.roms() }
                 CardDivider()
                 CardRow(
                     "Sounds and channels",
@@ -148,7 +133,7 @@ fun SettingsScreen(nav: Nav) {
                 }
             }
             Text(
-                "Unofficial app. Not affiliated with Xiaomi or xiaomi.eu.",
+                "Unofficial app. Not affiliated with Xiaomi or Xiaomi.EU.",
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.outline,
                 modifier = Modifier.padding(20.dp),

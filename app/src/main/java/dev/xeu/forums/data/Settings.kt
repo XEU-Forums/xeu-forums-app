@@ -19,9 +19,6 @@ enum class ThemeMode { SYSTEM, LIGHT, DARK }
 
 data class AppSettings(
     val themeMode: ThemeMode = ThemeMode.SYSTEM,
-    val dynamicColor: Boolean = true,
-    /** Keep the orange brand accent even when wallpaper colors are on. */
-    val orangeAccent: Boolean = true,
     val updateChannel: String = BuildConfig.CHANNEL,
     val autoCheckUpdates: Boolean = true,
     val notifyAlerts: Boolean = true,
@@ -32,8 +29,6 @@ data class AppSettings(
 class SettingsStore(private val context: Context) {
     private object K {
         val theme = stringPreferencesKey("theme_mode")
-        val dynamic = booleanPreferencesKey("dynamic_color")
-        val orange = booleanPreferencesKey("orange_accent")
         val channel = stringPreferencesKey("update_channel")
         val autoUpdate = booleanPreferencesKey("auto_check_updates")
         val alerts = booleanPreferencesKey("notify_alerts")
@@ -47,8 +42,6 @@ class SettingsStore(private val context: Context) {
     val settings: Flow<AppSettings> = context.settingsStore.data.map { p ->
         AppSettings(
             themeMode = runCatching { ThemeMode.valueOf(p[K.theme] ?: "SYSTEM") }.getOrDefault(ThemeMode.SYSTEM),
-            dynamicColor = p[K.dynamic] ?: true,
-            orangeAccent = p[K.orange] ?: true,
             updateChannel = p[K.channel] ?: BuildConfig.CHANNEL,
             autoCheckUpdates = p[K.autoUpdate] ?: true,
             notifyAlerts = p[K.alerts] ?: true,
@@ -63,8 +56,6 @@ class SettingsStore(private val context: Context) {
         val s = transform(now())
         context.settingsStore.edit { p ->
             p[K.theme] = s.themeMode.name
-            p[K.dynamic] = s.dynamicColor
-            p[K.orange] = s.orangeAccent
             p[K.channel] = s.updateChannel
             p[K.autoUpdate] = s.autoCheckUpdates
             p[K.alerts] = s.notifyAlerts

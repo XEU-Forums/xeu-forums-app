@@ -296,7 +296,7 @@ private fun ProfileHero(me: Me?, profile: Profile?, loading: Boolean, onSettings
                         onClick = onLogin,
                         colors = ButtonDefaults.buttonColors(containerColor = Color.White, contentColor = Brand.OrangeDeep),
                         modifier = Modifier.padding(top = 16.dp),
-                    ) { Text("Log in to xiaomi.eu") }
+                    ) { Text("Log in to Xiaomi.EU") }
                 }
             }
         }
@@ -331,8 +331,36 @@ fun LoginScreen(nav: Nav) {
     val scope = rememberCoroutineScope()
     var progress by remember { mutableIntStateOf(0) }
     var done by remember { mutableStateOf(false) }
+    var webView by remember { mutableStateOf<WebView?>(null) }
 
-    ScreenScaffold(title = "Log in", subtitle = "xiaomi.eu", onBack = { nav.back() }) { mod ->
+    fun finish() {
+        if (done) return
+        done = true
+        Http.unifyForumCookies()
+        Http.loggedIn.value = true
+        scope.launch {
+            runCatching { ForumRepository.me()?.let { Accounts(context.applicationContext).saveCurrent(it) } }
+            Scheduler.checkForumNow(context.applicationContext)
+            nav.back()
+        }
+    }
+
+    // XenForo marks the page with data-logged-in="true" once signed in. Check on every page event
+    // and also poll, so the screen closes as soon as the forum has accepted the login.
+    fun check() {
+        if (done) return
+        webView?.evaluateJavascript("document.documentElement.getAttribute('data-logged-in')") { v ->
+            if (v?.trim('"') == "true") finish()
+        }
+    }
+    androidx.compose.runtime.LaunchedEffect(webView) {
+        while (!done && webView != null) {
+            check()
+            kotlinx.coroutines.delay(500)
+        }
+    }
+
+    ScreenScaffold(title = "Log in", subtitle = "Xiaomi.EU Forums", onBack = { nav.back() }) { mod ->
         Column(mod) {
             if (progress in 1..99 || done) LinearProgressIndicator(
                 progress = { if (done) 1f else progress / 100f }, modifier = Modifier.fillMaxWidth()
@@ -345,7 +373,8 @@ fun LoginScreen(nav: Nav) {
                 Icon(Icons.Outlined.Lock, null, Modifier.size(18.dp), tint = MaterialTheme.colorScheme.primary)
                 Spacer(Modifier.size(10.dp))
                 Text(
-                    "Sign in with your forum username or email and tick \"Stay logged in\". " +
+                    if (done) "Signed in. Returning to the app…"
+                    else "Sign in with your forum username or email and tick \"Stay logged in\". " +
                         "Google sign-in isn't supported inside apps.",
                     style = MaterialTheme.typography.bodySmall,
                 )
@@ -354,6 +383,7 @@ fun LoginScreen(nav: Nav) {
                 modifier = Modifier.fillMaxSize(),
                 factory = { ctx ->
                     WebView(ctx).apply {
+                        webView = this
                         settings.javaScriptEnabled = true
                         settings.domStorageEnabled = true
                         settings.userAgentString = Http.userAgent
@@ -363,36 +393,18 @@ fun LoginScreen(nav: Nav) {
                             override fun onProgressChanged(view: WebView?, newProgress: Int) { progress = newProgress }
                         }
                         webViewClient = object : WebViewClient() {
-                            // Everything (captcha, password reset, etc.) stays inside this screen.
+                            // Everything (captcha, two-step, password reset) stays inside this screen.
                             override fun shouldOverrideUrlLoading(view: WebView?, request: WebResourceRequest?): Boolean {
                                 val scheme = request?.url?.scheme
                                 return scheme != "http" && scheme != "https"
                             }
-
+                            override fun onPageCommitVisible(view: WebView?, url: String?) { check() }
                             override fun onPageFinished(view: WebView?, url: String?) { check() }
-
-                            // XenForo marks the page with data-logged-in="true" once the session is signed in.
-                            private fun check() {
-                                if (done) return
-                                evaluateJavascript("document.documentElement.getAttribute('data-logged-in')") { v ->
-                                    if (!done && v?.trim('"') == "true") {
-                                        done = true
-                                        CookieManager.getInstance().flush()
-                                        Http.loggedIn.value = true
-                                        scope.launch {
-                                            runCatching {
-                                                ForumRepository.me()?.let { Accounts(context.applicationContext).saveCurrent(it) }
-                                            }
-                                            Scheduler.checkForumNow(context.applicationContext)
-                                            nav.back()
-                                        }
-                                    }
-                                }
-                            }
                         }
                         loadUrl(BASE + "login/")
                     }
                 },
+                onRelease = { it.destroy(); webView = null },
             )
         }
     }

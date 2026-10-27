@@ -18,7 +18,7 @@ object ForumRepository {
 
     /** Strips page/post suffixes so "page-N" can be appended cleanly. */
     fun baseUrl(url: String): String {
-        var u = url.substringBefore('#').substringBefore('?')
+        var u = normalizeForumUrl(url).substringBefore('#').substringBefore('?')
         u = u.replace(Regex("""/(page-\d+|post-\d+|latest|unread)/?$"""), "/")
         return if (u.endsWith("/")) u else "$u/"
     }

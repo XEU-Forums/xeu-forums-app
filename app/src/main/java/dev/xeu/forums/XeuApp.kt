@@ -17,6 +17,7 @@ class XeuApp : Application(), ImageLoaderFactory {
     override fun onCreate() {
         super.onCreate()
         Http.init(this)
+        runCatching { Http.unifyForumCookies() }
         Notifier.createChannels(this)
         appScope.launch { Scheduler.applyAll(this@XeuApp) }
     }

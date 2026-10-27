@@ -67,7 +67,7 @@ fun ForumsScreen(nav: Nav) {
                         }
                         item(key = "foot") {
                             Text(
-                                "Unofficial app · Not affiliated with Xiaomi or xiaomi.eu",
+                                "Unofficial app · Not affiliated with Xiaomi or Xiaomi.EU",
                                 style = MaterialTheme.typography.labelSmall,
                                 color = MaterialTheme.colorScheme.outline,
                                 modifier = Modifier.fillMaxWidth().padding(24.dp),
@@ -86,7 +86,7 @@ private fun HomeHero(index: ForumIndex?, nav: Nav) {
     val accents = LocalAccents.current
     HeroHeader {
         Text(
-            "UNOFFICIAL COMMUNITY",
+            "UNOFFICIAL APP",
             style = SectionLabelStyle,
             color = accents.onHero.copy(alpha = 0.8f),
             modifier = Modifier.padding(top = 8.dp),

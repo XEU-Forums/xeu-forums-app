@@ -45,7 +45,7 @@ import kotlinx.coroutines.launch
 
 @Composable
 private fun NeedsLogin(nav: Nav) {
-    EmptyState(Icons.Outlined.Lock, "Log in required", "Log in to your xiaomi.eu account to see this.") {
+    EmptyState(Icons.Outlined.Lock, "Log in required", "Log in to your Xiaomi.EU account to see this.") {
         androidx.compose.material3.Button(onClick = { nav.login() }, modifier = Modifier.padding(top = 8.dp)) {
             Text("Log in")
         }

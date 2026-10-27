@@ -12,7 +12,7 @@ object ForumParser {
     fun idFromUrl(url: String): Int =
         idRegex.find(url.substringBefore("/page-").substringBefore("/post-"))?.groupValues?.get(1)?.toIntOrNull() ?: 0
 
-    fun doc(html: String, url: String): Document = Jsoup.parse(html, url)
+    fun doc(html: String, url: String): Document = Jsoup.parse(html, normalizeForumUrl(url))
 
     fun csrf(doc: Document): String = doc.selectFirst("html")?.attr("data-csrf").orEmpty()
 
@@ -176,7 +176,7 @@ object ForumParser {
             )
         }
         val (page, total) = pages(doc)
-        val replyForm = doc.selectFirst("form.js-quickReply")
+        val replyForm = doc.selectFirst("form.js-quickReply, form[action*=/add-reply]")
         val locked = doc.select(".blockStatus").text().contains("Not open", ignoreCase = true)
         return ThreadPage(
             title = cleanTitle(doc) ?: "Thread",

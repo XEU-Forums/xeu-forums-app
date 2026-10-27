@@ -68,7 +68,7 @@ object RomTracker {
             val name = item.title.substringAfterLast('/')
             Notifier.post(
                 context, Notifier.CH_ROMS, item.guid.hashCode(),
-                if (isFile) "New xiaomi.eu build" else "New post in ${item.source}",
+                if (isFile) "New Xiaomi.EU build" else "New post in ${item.source}",
                 name, tap, group = "roms",
             )
         }

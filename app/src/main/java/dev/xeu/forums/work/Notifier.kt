@@ -30,11 +30,11 @@ object Notifier {
         nm.createNotificationChannels(
             listOf(
                 NotificationChannel(CH_ALERTS, "Forum alerts", NotificationManager.IMPORTANCE_DEFAULT)
-                    .apply { description = "Replies, quotes, mentions and reactions on xiaomi.eu" },
+                    .apply { description = "Replies, quotes, mentions and reactions on Xiaomi.EU" },
                 NotificationChannel(CH_CONVERSATIONS, "Direct messages", NotificationManager.IMPORTANCE_HIGH)
-                    .apply { description = "New messages in your xiaomi.eu conversations" },
+                    .apply { description = "New messages in your Xiaomi.EU conversations" },
                 NotificationChannel(CH_ROMS, "ROM releases", NotificationManager.IMPORTANCE_DEFAULT)
-                    .apply { description = "New xiaomi.eu builds for your devices and new release threads" },
+                    .apply { description = "New Xiaomi.EU builds for your devices and new release threads" },
                 NotificationChannel(CH_UPDATES, "App updates", NotificationManager.IMPORTANCE_LOW)
                     .apply { description = "A new version of XEU Forums is available" },
             )

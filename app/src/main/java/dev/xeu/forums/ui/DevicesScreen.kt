@@ -23,6 +23,8 @@ import androidx.compose.material.icons.outlined.PhoneAndroid
 import androidx.compose.material.icons.outlined.RadioButtonUnchecked
 import androidx.compose.material.icons.outlined.Search
 import androidx.compose.material.icons.outlined.Smartphone
+import androidx.compose.material.icons.outlined.SystemUpdate
+import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.FilterChip
@@ -92,8 +94,17 @@ fun DevicesScreen(nav: Nav) {
                             style = MaterialTheme.typography.bodyMedium,
                             color = accents.onHero.copy(alpha = 0.9f),
                         )
+                        Button(
+                            onClick = { nav.roms() },
+                            colors = ButtonDefaults.buttonColors(containerColor = Color.White, contentColor = Brand.OrangeDeep),
+                            modifier = Modifier.padding(top = 14.dp),
+                        ) {
+                            Icon(Icons.Outlined.SystemUpdate, null, Modifier.size(18.dp))
+                            Spacer(Modifier.size(8.dp))
+                            Text("Latest ROM builds")
+                        }
                         if (!list.isNullOrEmpty()) Row(
-                            Modifier.padding(top = 14.dp).horizontalScroll(rememberScrollState()),
+                            Modifier.padding(top = 12.dp).horizontalScroll(rememberScrollState()),
                             horizontalArrangement = Arrangement.spacedBy(8.dp),
                         ) {
                             val chipColors = FilterChipDefaults.filterChipColors(
@@ -114,7 +125,7 @@ fun DevicesScreen(nav: Nav) {
                     list.isEmpty() -> item {
                         EmptyState(
                             Icons.Outlined.PhoneAndroid, "No devices yet",
-                            "Pick the phones you own to get a feed of their forums and alerts for new xiaomi.eu builds.",
+                            "Pick the phones you own to get a feed of their forums and alerts for new Xiaomi.EU builds.",
                         ) {
                             Button(onClick = { nav.devicePicker() }, modifier = Modifier.padding(top = 8.dp)) {
                                 Text("Choose devices")

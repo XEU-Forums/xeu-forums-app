@@ -99,7 +99,7 @@ fun ComposeScreen(mode: String, targetUrl: String, initialQuote: String, nav: Na
         if (!Http.isLoggedIn()) {
             Box(mod) {
                 EmptyState(androidx.compose.material.icons.Icons.Outlined.Lock, "Log in to post",
-                    "Log in to your xiaomi.eu account to reply and start threads.") {
+                    "Log in to your Xiaomi.EU account to reply and start threads.") {
                     Button(onClick = { nav.login() }, modifier = Modifier.padding(top = 8.dp)) { Text("Log in") }
                 }
             }
@@ -156,7 +156,7 @@ fun ComposeScreen(mode: String, targetUrl: String, initialQuote: String, nav: Na
         AlertDialog(
             onDismissRequest = { confirm = false },
             title = { Text(if (isThread) "Post this thread?" else "Post this reply?") },
-            text = { Text("It will be published publicly on xiaomi.eu under your account.") },
+            text = { Text("It will be published publicly on Xiaomi.EU under your account.") },
             confirmButton = { TextButton(onClick = { confirm = false; send() }) { Text("Post") } },
             dismissButton = { TextButton(onClick = { confirm = false }) { Text("Cancel") } },
         )
