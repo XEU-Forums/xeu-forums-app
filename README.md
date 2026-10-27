@@ -15,7 +15,7 @@ An unofficial Android client for the [xiaomi.eu community forum](https://xiaomi.
 
 ### Option A – Releases
 - **Dev:** every push to `dev` replaces the **dev** pre-release.
-- **Stable:** push a tag like `v1.0.0` (an annotated tag's message becomes the release notes) to publish a stable release.
+- **Stable:** set the new version in `version.txt`, write the notes in `release-notes.md`, and push to `main`. CI creates the tag (e.g. `v1.0.0`) and publishes the stable release. Pushing a `v*` tag yourself works too.
 
 Each release has the APK plus `update.json`. The app checks the GitHub API first; if that fails (for example GitHub's 60 requests/hour limit), it reads `update.json` through the release download link instead, which isn't rate limited. Downloads are checked against the SHA-256 before installing.
 
