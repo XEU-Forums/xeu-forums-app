@@ -65,13 +65,28 @@ jobs:
           KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
         run: |
           chmod +x gradlew
-          ./gradlew --no-daemon assembleRelease
+          set -o pipefail
+          ./gradlew --no-daemon assembleRelease 2>&1 | tee "$RUNNER_TEMP/build.log"
           mkdir -p dist
           APK="XEU-Forums-$VERSION_NAME.apk"
           cp app/build/outputs/apk/release/*.apk "dist/$APK"
           echo "APK=$APK" >> "$GITHUB_ENV"
           echo "SHA256=$(sha256sum "dist/$APK" | cut -d' ' -f1)" >> "$GITHUB_ENV"
           echo "APK_SIZE=$(stat -c%s "dist/$APK")" >> "$GITHUB_ENV"
+
+      - name: Report compile errors
+        if: failure()
+        run: |
+          # Surface Kotlin/AAPT errors as annotations so they show on the run page.
+          grep -E '^e: |error: |AAPT: error' "$RUNNER_TEMP/build.log" | head -40 | while IFS= read -r line; do
+            if [[ "$line" =~ ^e:\ file://([^:]+):([0-9]+):([0-9]+)\ (.*)$ ]]; then
+              f="${BASH_REMATCH[1]#$GITHUB_WORKSPACE/}"
+              echo "::error file=$f,line=${BASH_REMATCH[2]},col=${BASH_REMATCH[3]}::${BASH_REMATCH[4]}"
+            else
+              echo "::error::$line"
+            fi
+          done
+          grep -A6 "What went wrong" "$RUNNER_TEMP/build.log" | head -20 | sed 's/^/::error::/' || true
 
       - name: Release notes and update.json
         if: github.event_name == 'push' && (github.ref == 'refs/heads/dev' || startsWith(github.ref, 'refs/tags/v'))
