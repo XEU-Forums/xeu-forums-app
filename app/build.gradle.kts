@@ -12,16 +12,26 @@ android {
         applicationId = "dev.xeu.reader"
         minSdk = 26
         targetSdk = 35
-        versionCode = 1
-        versionName = "1.0"
+        // CI passes the run number so every build installs over the previous one.
+        versionCode = (System.getenv("VERSION_CODE") ?: "1").toInt()
+        versionName = System.getenv("VERSION_NAME") ?: "1.0"
+    }
+
+    // CI writes the keystore from repo secrets. Without them (e.g. local builds) the debug key is used.
+    val ksFile = System.getenv("KEYSTORE_FILE")?.let { file(it) }?.takeIf { it.exists() }
+    signingConfigs {
+        if (ksFile != null) create("release") {
+            storeFile = ksFile
+            storePassword = System.getenv("KEYSTORE_PASSWORD")
+            keyAlias = System.getenv("KEY_ALIAS") ?: "xeu"
+            keyPassword = System.getenv("KEYSTORE_PASSWORD")
+        }
     }
 
     buildTypes {
         release {
             isMinifyEnabled = false
-            // Signed with the debug key so the CI-built release APK installs directly.
-            // Replace with your own signing config before publishing anywhere.
-            signingConfig = signingConfigs.getByName("debug")
+            signingConfig = signingConfigs.findByName("release") ?: signingConfigs.getByName("debug")
         }
     }
     compileOptions {
