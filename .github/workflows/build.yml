@@ -220,6 +220,19 @@ jobs:
 
           fdroid update --pretty
 
+          # Report what was indexed; fail if the app is missing.
+          python3 - <<'PY'
+          import json, os
+          idx = json.load(open("repo/index-v1.json"))
+          pkgs = idx.get("packages", {})
+          apks = pkgs.get("dev.xeu.forums", [])
+          if not apks:
+              print("::error::dev.xeu.forums is not in the F-Droid index")
+              raise SystemExit(1)
+          names = ", ".join(f'{a["versionName"]} ({a["versionCode"]})' for a in apks)
+          print(f"::notice::F-Droid index: {len(idx.get('apps', []))} app(s); XEU Forums versions: {names}")
+          PY
+
           FP="$(keytool -exportcert -alias xeu-repo -keystore keystore.p12 -storepass "$PASS" 2>/dev/null \
             | sha256sum | cut -d' ' -f1 | tr a-f A-F)"
           echo "Repo fingerprint: $FP"
