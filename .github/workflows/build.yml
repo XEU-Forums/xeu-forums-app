@@ -152,3 +152,103 @@ jobs:
             --latest \
             --title "XEU Forums $VERSION_NAME" \
             --notes-file dist/notes.md
+
+  # Self-hosted F-Droid repo on GitHub Pages (gh-pages branch), rebuilt from the latest stable
+  # GitHub releases on every push to main. Without the FDROID_* secrets it does a full dry run with a
+  # throwaway key and publishes nothing.
+  fdroid:
+    needs: build
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    env:
+      REPO_URL: https://xeu-forums.github.io/xeu-forums-app/repo
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Install fdroidserver
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq fdroidserver qrencode >/dev/null
+          fdroid --version
+
+      - name: Build repo
+        env:
+          GH_TOKEN: ${{ github.token }}
+          FDROID_KEYSTORE_BASE64: ${{ secrets.FDROID_KEYSTORE_BASE64 }}
+          FDROID_KEYSTORE_PASS: ${{ secrets.FDROID_KEYSTORE_PASS }}
+        run: |
+          set -euo pipefail
+          mkdir -p work/repo/icons work/metadata
+          cp -r fdroid/metadata/. work/metadata/
+          cp fdroid/repo-icon.png work/repo/icons/icon.png
+          cd work
+
+          if [ -n "${FDROID_KEYSTORE_BASE64:-}" ] && [ -n "${FDROID_KEYSTORE_PASS:-}" ]; then
+            echo "$FDROID_KEYSTORE_BASE64" | base64 -d > keystore.p12
+            PASS="$FDROID_KEYSTORE_PASS"
+            echo "DEPLOY=true" >> "$GITHUB_ENV"
+          else
+            echo "::warning::FDROID_KEYSTORE_BASE64/FDROID_KEYSTORE_PASS not set: dry run with a throwaway key, nothing is published."
+            PASS="$(openssl rand -hex 16)"
+            keytool -genkeypair -keystore keystore.p12 -storetype PKCS12 -alias xeu-repo -keyalg RSA -keysize 2048 \
+              -validity 30 -storepass "$PASS" -keypass "$PASS" -dname "CN=dry run" >/dev/null 2>&1
+            echo "DEPLOY=false" >> "$GITHUB_ENV"
+          fi
+
+          {
+            echo "repo_url: $REPO_URL"
+            echo "repo_name: XEU Forums"
+            echo "repo_icon: icon.png"
+            echo "repo_description: >-"
+            echo "  Unofficial XEU Forums app for the Xiaomi.EU community forum. Stable releases only."
+            echo "archive_older: 0"
+            echo "keystore: keystore.p12"
+            echo "repo_keyalias: xeu-repo"
+            echo "keystorepass: \"$PASS\""
+            echo "keypass: \"$PASS\""
+            echo "keydname: CN=XEU Forums F-Droid Repo"
+            echo "sdk_path: $ANDROID_HOME"
+          } > config.yml
+          chmod 600 config.yml keystore.p12
+
+          # Latest three stable (non-pre-release) GitHub releases.
+          gh release list -R "$GITHUB_REPOSITORY" --exclude-pre-releases --exclude-drafts --limit 3 \
+            --json tagName -q '.[].tagName' | while read -r tag; do
+            gh release download "$tag" -R "$GITHUB_REPOSITORY" -p '*.apk' -D repo --skip-existing
+          done
+          ls -la repo
+
+          fdroid update --pretty
+
+          FP="$(keytool -exportcert -alias xeu-repo -keystore keystore.p12 -storepass "$PASS" 2>/dev/null \
+            | sha256sum | cut -d' ' -f1 | tr a-f A-F)"
+          echo "Repo fingerprint: $FP"
+
+          # Site: landing page + repo
+          mkdir -p ../site
+          cp -r repo ../site/repo
+          QR="$(qrencode -t SVG -m 0 -o - "$REPO_URL?fingerprint=$FP" | sed '1,/<svg/{/<svg/!d}')"; export QR
+          python3 - "$FP" "$(date -u '+%d %b %Y')" <<'PY' ../fdroid/index.html ../site/index.html
+          import sys, os
+          fp, updated = sys.argv[1], sys.argv[2]
+          src, dst = sys.argv[3], sys.argv[4]
+          qr = os.environ["QR"]
+          html = open(src).read().replace("@FINGERPRINT@", fp).replace("@UPDATED@", updated).replace("@QR_SVG@", qr)
+          open(dst, "w").write(html)
+          PY
+          touch ../site/.nojekyll
+          ls -la ../site ../site/repo
+        shell: bash
+
+      - name: Publish to gh-pages
+        if: env.DEPLOY == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          cd site
+          git init -q -b gh-pages
+          git -c user.name="pagnchanak" -c user.email="chea.pagnchanak@gmail.com" add -A
+          git -c user.name="pagnchanak" -c user.email="chea.pagnchanak@gmail.com" \
+            commit -q -m "F-Droid repo for ${GITHUB_SHA::7}"
+          # One commit, force-pushed: the branch never accumulates old APKs.
+          git push -q --force "https://x-access-token:${GH_TOKEN}@github.com/${GITHUB_REPOSITORY}.git" gh-pages

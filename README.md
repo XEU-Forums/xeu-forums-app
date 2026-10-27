@@ -21,7 +21,14 @@ Each release has the APK plus `update.json`. The app checks the GitHub API first
 
 Signing uses the repo secrets `KEYSTORE_BASE64` and `KEYSTORE_PASSWORD`, so every build installs over the previous one.
 
-### Option B – Android Studio
+### Option B – F-Droid
+Add the XEU Forums repository to F-Droid (or Droid-ify / Neo Store): open
+**https://xeu-forums.github.io/xeu-forums-app/** on your phone and tap **Add to F-Droid**, or add
+`https://xeu-forums.github.io/xeu-forums-app/repo` under Settings → Repositories.
+Repo fingerprint: `1BDCB444EB7C5E4B1B5BF62809B942F532C6E0E486306ACBDD78B467B8F57227`.
+The repo carries the latest stable releases and is rebuilt by CI on every push to `main`.
+
+### Option C – Android Studio
 Open the folder in Android Studio (Ladybug or newer), let Gradle sync, and press Run.
 
 ## Notes

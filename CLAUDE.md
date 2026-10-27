@@ -48,5 +48,10 @@ Gotchas:
 - Compile errors show up as check-run annotations (`Report compile errors` step) – read them with
   `gh api repos/XEU-Forums/xeu-forums-app/check-runs/<job-id>/annotations`, since raw job logs can't be downloaded
   from the Claude session.
+- **F-Droid repo:** the `fdroid` job (push to `main`) rebuilds a self-hosted F-Droid repo from the latest 3 stable
+  releases and force-pushes it as a single commit to `gh-pages` (GitHub Pages:
+  https://xeu-forums.github.io/xeu-forums-app/). Index signed with secrets `FDROID_KEYSTORE_BASE64` +
+  `FDROID_KEYSTORE_PASS` (alias `xeu-repo`, fingerprint `1BDCB444…F57227`); without them it's a dry run.
+  Listing lives in `fdroid/metadata/`, landing page in `fdroid/index.html`. Stable only – never put dev builds there.
 - After a release, verify: `update.json` from the release download URL, APK SHA-256 matches, APK signed with the
   release key, `actions/artifacts` total is 0.
