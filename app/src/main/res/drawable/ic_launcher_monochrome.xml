@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Single-colour version for Android 13+ themed icons: outlined bubbles with xeu lettering. -->
+<!-- Single-colour version for Android 13+ themed icons: outlined bubbles with XEU lettering. -->
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
     android:width="108dp"
     android:height="108dp"
@@ -17,9 +17,12 @@
         android:strokeLineJoin="round"
         android:pathData="M38,42h28a10,10 0,0 1,10 10v16a10,10 0,0 1,-10 10H48l-10,8v-8a10,10 0,0 1,-10 -10V52a10,10 0,0 1,10 -10z" />
     <path
+        android:fillColor="#FFFFFFFF"
+        android:pathData="M35,53H38.8L45,67H41.2Z M41.2,53H45L38.8,67H35Z" />
+    <path
         android:strokeColor="#FFFFFFFF"
-        android:strokeWidth="3.6"
-        android:strokeLineCap="round"
-        android:strokeLineJoin="round"
-        android:pathData="M33.5,53.5L42.5,66.5M42.5,53.5L33.5,66.5M46.5,60H57.5A5.5,6.5 0 1,0 55.9,64.6M61.5,53.5V61A5,5.5 0 0,0 71.5,61V53.5M71.5,61V66.5" />
+        android:strokeWidth="3.4"
+        android:strokeLineCap="butt"
+        android:strokeLineJoin="miter"
+        android:pathData="M56,54.7H52.5A3.3,3.3 0 0,0 49.2,58V65.3H56M49.2,60H54.8M60.2,53V62A3.3,3.3 0 0,0 63.5,65.3A3.3,3.3 0 0,0 66.8,62V53" />
 </vector>

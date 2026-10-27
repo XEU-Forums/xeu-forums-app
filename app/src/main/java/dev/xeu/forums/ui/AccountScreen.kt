@@ -24,6 +24,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material.icons.automirrored.outlined.Logout
 import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.outlined.AccountCircle
@@ -226,7 +227,7 @@ private fun CountOrChevron(count: Int) {
     if (count > 0) Badge(containerColor = MaterialTheme.colorScheme.primary) {
         Text(count.coerceAtMost(99).toString(), modifier = Modifier.padding(horizontal = 2.dp))
     } else Icon(
-        androidx.compose.material.icons.Icons.AutoMirrored.Filled.KeyboardArrowRight, null,
+        Icons.AutoMirrored.Filled.KeyboardArrowRight, null,
         tint = MaterialTheme.colorScheme.outline,
     )
 }
