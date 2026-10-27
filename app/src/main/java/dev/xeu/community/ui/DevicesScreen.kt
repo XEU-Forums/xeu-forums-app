@@ -1,4 +1,4 @@
-package dev.xeu.reader.ui
+package dev.xeu.community.ui
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
@@ -35,11 +35,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import dev.xeu.reader.Nav
-import dev.xeu.reader.data.Device
-import dev.xeu.reader.data.FeedItem
-import dev.xeu.reader.data.ForumRepository
-import dev.xeu.reader.data.Prefs
+import dev.xeu.community.Nav
+import dev.xeu.community.data.Device
+import dev.xeu.community.data.FeedItem
+import dev.xeu.community.data.ForumRepository
+import dev.xeu.community.data.Prefs
 import kotlinx.coroutines.launch
 
 @Composable

@@ -1,4 +1,4 @@
-package dev.xeu.reader.ui
+package dev.xeu.community.ui
 
 import android.annotation.SuppressLint
 import android.graphics.Bitmap
@@ -26,10 +26,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
-import dev.xeu.reader.Nav
-import dev.xeu.reader.data.BASE
-import dev.xeu.reader.data.ForumRepository
-import dev.xeu.reader.data.Http
+import dev.xeu.community.Nav
+import dev.xeu.community.data.BASE
+import dev.xeu.community.data.ForumRepository
+import dev.xeu.community.data.Http
 
 @Composable
 fun AccountScreen(nav: Nav) {

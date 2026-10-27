@@ -1,4 +1,4 @@
-package dev.xeu.reader.ui
+package dev.xeu.community.ui
 
 import android.content.Intent
 import androidx.compose.foundation.background
@@ -48,10 +48,10 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
-import dev.xeu.reader.Nav
-import dev.xeu.reader.data.ForumRepository
-import dev.xeu.reader.data.Http
-import dev.xeu.reader.data.Post
+import dev.xeu.community.Nav
+import dev.xeu.community.data.ForumRepository
+import dev.xeu.community.data.Http
+import dev.xeu.community.data.Post
 
 @Composable
 fun ThreadScreen(url: String, initialPage: Int, nav: Nav) {

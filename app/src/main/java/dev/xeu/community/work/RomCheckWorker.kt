@@ -1,4 +1,4 @@
-package dev.xeu.reader.work
+package dev.xeu.community.work
 
 import android.Manifest
 import android.app.NotificationChannel
@@ -20,12 +20,12 @@ import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkManager
 import androidx.work.WorkerParameters
-import dev.xeu.reader.MainActivity
-import dev.xeu.reader.R
-import dev.xeu.reader.data.FeedItem
-import dev.xeu.reader.data.ForumRepository
-import dev.xeu.reader.data.Http
-import dev.xeu.reader.data.Prefs
+import dev.xeu.community.MainActivity
+import dev.xeu.community.R
+import dev.xeu.community.data.FeedItem
+import dev.xeu.community.data.ForumRepository
+import dev.xeu.community.data.Http
+import dev.xeu.community.data.Prefs
 import java.util.concurrent.TimeUnit
 
 const val CHANNEL_ROMS = "rom_releases"

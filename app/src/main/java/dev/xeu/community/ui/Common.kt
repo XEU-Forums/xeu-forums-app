@@ -1,4 +1,4 @@
-package dev.xeu.reader.ui
+package dev.xeu.community.ui
 
 import android.content.Context
 import android.content.Intent

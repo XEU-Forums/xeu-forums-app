@@ -1,4 +1,4 @@
-package dev.xeu.reader.data
+package dev.xeu.community.data
 
 /** A forum, category or link node from the forum list. */
 data class Node(

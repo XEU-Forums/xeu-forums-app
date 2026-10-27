@@ -30,7 +30,7 @@ Open the folder in Android Studio (Ladybug or newer), let Gradle sync, and press
 ## Project layout
 
 ```
-app/src/main/java/dev/xeu/reader/
+app/src/main/java/dev/xeu/community/
   data/        Http (OkHttp + WebView cookie sharing), ForumParser (Jsoup), ForumRepository, Prefs
   work/        RomCheckWorker – background ROM checks and notifications
   ui/          Compose screens: Forums, Forum, Thread, Compose, Devices, ROMs, Account/Login

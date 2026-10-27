@@ -1,4 +1,4 @@
-package dev.xeu.reader.ui
+package dev.xeu.community.ui
 
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
@@ -34,9 +34,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
-import dev.xeu.reader.Nav
-import dev.xeu.reader.data.ForumRepository
-import dev.xeu.reader.data.Http
+import dev.xeu.community.Nav
+import dev.xeu.community.data.ForumRepository
+import dev.xeu.community.data.Http
 import kotlinx.coroutines.launch
 
 @Composable

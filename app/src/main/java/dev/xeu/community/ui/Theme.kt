@@ -1,4 +1,4 @@
-package dev.xeu.reader.ui
+package dev.xeu.community.ui
 
 import android.os.Build
 import androidx.compose.foundation.isSystemInDarkTheme

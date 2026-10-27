@@ -1,4 +1,4 @@
-package dev.xeu.reader
+package dev.xeu.community
 
 import android.content.Intent
 import android.net.Uri
@@ -32,18 +32,18 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
-import dev.xeu.reader.ui.AccountScreen
-import dev.xeu.reader.ui.ComposeScreen
-import dev.xeu.reader.ui.DevicePickerScreen
-import dev.xeu.reader.ui.DevicesScreen
-import dev.xeu.reader.ui.ForumScreen
-import dev.xeu.reader.ui.ForumsScreen
-import dev.xeu.reader.ui.LoginScreen
-import dev.xeu.reader.ui.RomsScreen
-import dev.xeu.reader.ui.ThreadScreen
-import dev.xeu.reader.ui.XeuTheme
-import dev.xeu.reader.ui.isForumUrl
-import dev.xeu.reader.ui.openExternal
+import dev.xeu.community.ui.AccountScreen
+import dev.xeu.community.ui.ComposeScreen
+import dev.xeu.community.ui.DevicePickerScreen
+import dev.xeu.community.ui.DevicesScreen
+import dev.xeu.community.ui.ForumScreen
+import dev.xeu.community.ui.ForumsScreen
+import dev.xeu.community.ui.LoginScreen
+import dev.xeu.community.ui.RomsScreen
+import dev.xeu.community.ui.ThreadScreen
+import dev.xeu.community.ui.XeuTheme
+import dev.xeu.community.ui.isForumUrl
+import dev.xeu.community.ui.openExternal
 
 class MainActivity : ComponentActivity() {
     private var pendingLink by mutableStateOf<String?>(null)

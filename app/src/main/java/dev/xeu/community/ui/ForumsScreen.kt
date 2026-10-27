@@ -1,4 +1,4 @@
-package dev.xeu.reader.ui
+package dev.xeu.community.ui
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -33,9 +33,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import dev.xeu.reader.Nav
-import dev.xeu.reader.data.ForumRepository
-import dev.xeu.reader.data.Node
+import dev.xeu.community.Nav
+import dev.xeu.community.data.ForumRepository
+import dev.xeu.community.data.Node
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

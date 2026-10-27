@@ -1,4 +1,4 @@
-package dev.xeu.reader.ui
+package dev.xeu.community.ui
 
 import android.Manifest
 import android.content.pm.PackageManager
@@ -40,11 +40,11 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
-import dev.xeu.reader.Nav
-import dev.xeu.reader.data.ForumRepository
-import dev.xeu.reader.data.Prefs
-import dev.xeu.reader.data.TrackerSettings
-import dev.xeu.reader.work.RomTracker
+import dev.xeu.community.Nav
+import dev.xeu.community.data.ForumRepository
+import dev.xeu.community.data.Prefs
+import dev.xeu.community.data.TrackerSettings
+import dev.xeu.community.work.RomTracker
 import kotlinx.coroutines.launch
 
 @Composable

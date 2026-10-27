@@ -1,4 +1,4 @@
-package dev.xeu.reader.data
+package dev.xeu.community.data
 
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document

@@ -1,11 +1,11 @@
-package dev.xeu.reader
+package dev.xeu.community
 
 import android.app.Application
 import coil.ImageLoader
 import coil.ImageLoaderFactory
-import dev.xeu.reader.data.Http
-import dev.xeu.reader.data.Prefs
-import dev.xeu.reader.work.RomTracker
+import dev.xeu.community.data.Http
+import dev.xeu.community.data.Prefs
+import dev.xeu.community.work.RomTracker
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob

@@ -1,4 +1,4 @@
-package dev.xeu.reader.data
+package dev.xeu.community.data
 
 import android.content.Context
 import android.webkit.CookieManager

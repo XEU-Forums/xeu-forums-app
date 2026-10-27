@@ -5,11 +5,11 @@ plugins {
 }
 
 android {
-    namespace = "dev.xeu.reader"
+    namespace = "dev.xeu.community"
     compileSdk = 35
 
     defaultConfig {
-        applicationId = "dev.xeu.reader"
+        applicationId = "dev.xeu.community"
         minSdk = 26
         targetSdk = 35
         // CI passes the run number so every build installs over the previous one.
