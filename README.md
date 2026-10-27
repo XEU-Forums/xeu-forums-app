@@ -30,13 +30,13 @@ Open the folder in Android Studio (Ladybug or newer), let Gradle sync, and press
 - Logging in: tick **Stay logged in** on the login page so the session survives app restarts. Google sign-in is blocked inside in-app browsers, so use your forum username/email and password.
 - On Android 12+, to open xiaomi.eu links in the app: *Settings → Apps → XEU Forums → Open by default → Add links*.
 - The app reads the public HTML pages and RSS feeds. If the forum changes its theme, selectors in `ForumParser.kt` may need updating.
-- Please be a good citizen: the tracker's minimum interval is 1 hour, and the forum's rules (English only, no ROM ETA questions) apply to anything you post.
+- The forum's rules (English only, no ROM ETA questions) apply to anything you post.
 
 ## Project layout
 
 ```
 app/src/main/java/dev/xeu/forums/
   data/        Http (OkHttp + WebView cookie sharing), ForumParser (Jsoup), ForumRepository, Prefs
-  work/        RomCheckWorker – background ROM checks and notifications
-  ui/          Compose screens: Forums, Forum, Thread, Compose, Devices, ROMs, Account/Login
+  work/        Workers – background checks for forum alerts, messages and app updates
+  ui/          Compose screens: Forums, Forum, Thread, Compose, Devices, Account, Search, Settings
 ```

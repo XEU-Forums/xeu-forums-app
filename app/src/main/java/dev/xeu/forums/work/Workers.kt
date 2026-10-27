@@ -12,6 +12,7 @@ import androidx.work.WorkerParameters
 import dev.xeu.forums.data.Accounts
 import dev.xeu.forums.data.ForumRepository
 import dev.xeu.forums.data.Http
+import dev.xeu.forums.data.isNativeForumLink
 import dev.xeu.forums.data.SettingsStore
 import dev.xeu.forums.update.Updater
 import java.util.concurrent.TimeUnit
@@ -76,7 +77,7 @@ class ForumNotificationWorker(ctx: Context, params: WorkerParameters) : Coroutin
                     val maxId = alerts.maxOfOrNull { it.id } ?: last
                     if (last >= 0) {
                         val fresh = alerts.filter {
-                            it.id > last && it.unread && it.link?.let(dev.xeu.forums.data::isNativeForumLink) == true
+                            it.id > last && it.unread && it.link?.let { l -> isNativeForumLink(l) } == true
                         }.sortedBy { it.id }
                         fresh.takeLast(6).forEach { a ->
                             Notifier.post(
