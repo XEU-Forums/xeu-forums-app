@@ -50,6 +50,7 @@ Gotchas:
   from the Claude session.
 - **F-Droid:** distributed through the separate repo `jaycee-h/jaycee-h.github.io` (https://jaycee-h.github.io/repo),
   which pulls the latest stable releases from here every 3 hours. Its listing for this app lives there
-  (`metadata/dev.xeu.forums.yml`). Nothing F-Droid-related belongs in this repo.
+  (`metadata/dev.xeu.forums.yml`). Nothing F-Droid-related belongs in this repo, except the README's
+  "Get it on F-Droid" badge, which loads its image from that repo and links to https://jaycee-h.github.io/.
 - After a release, verify: `update.json` from the release download URL, APK SHA-256 matches, APK signed with the
   release key, `actions/artifacts` total is 0.
