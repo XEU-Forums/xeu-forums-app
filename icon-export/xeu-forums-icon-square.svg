@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="18 18 72 72" width="1024" height="1024">
+  <title>XEU Forums</title>
+  <defs>
+    <linearGradient id="bg" gradientUnits="userSpaceOnUse" x1="0" y1="0" x2="108" y2="108">
+      <stop offset="0" stop-color="#FF8A3D"/>
+      <stop offset="1" stop-color="#E04E00"/>
+    </linearGradient>
+    <clipPath id="r"><rect x="18" y="18" width="72" height="72"/></clipPath>
+  </defs>
+  <g clip-path="url(#r)">
+    <rect x="0" y="0" width="108" height="108" fill="url(#bg)"/>
+    <path fill="#fff" fill-opacity="0.55" d="M44,30h26a10,10 0,0 1,10 10v14a10,10 0,0 1,-10 10h-1v8l-9,-8H44a10,10 0,0 1,-10 -10V40a10,10 0,0 1,10 -10z"/>
+    <path fill="#fff" d="M38,42h28a10,10 0,0 1,10 10v16a10,10 0,0 1,-10 10H48l-10,8v-8a10,10 0,0 1,-10 -10V52a10,10 0,0 1,10 -10z"/>
+    <path fill="#FF6A13" d="M36.28 65.81H38.66L40.5 63.13C40.9 62.54 41.29 61.97 41.67 61.38C42.05 61.97 42.43 62.54 42.83 63.13L44.64 65.81H47.07L42.89 59.71L46.76 54H44.43L42.95 56.19C42.52 56.83 42.11 57.47 41.7 58.11C41.29 57.47 40.88 56.83 40.47 56.19L39.01 54H36.62L40.52 59.77ZM48.34 65.81H56.54V63.99H50.43V60.71H56.08V58.92H50.43V55.82H56.54V54H48.34ZM62.95 66C65.83 66 67.72 64.24 67.72 61.73V54H65.65V61.56C65.65 63.07 64.6 64.15 62.95 64.15C61.29 64.15 60.24 63.06 60.24 61.56V54H58.17V61.73C58.17 64.25 60.05 66 62.95 66Z"/>
+  </g>
+</svg>
